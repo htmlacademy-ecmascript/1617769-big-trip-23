@@ -33,10 +33,10 @@ export default class PointModel {
   }
 
   get offers() {
-    return this.offers;
+    return this.#offers;
   }
 
   get destinations() {
-    return this.destinations;
+    return this.#destinations;
   }
 }
