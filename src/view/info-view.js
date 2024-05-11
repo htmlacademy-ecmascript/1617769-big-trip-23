@@ -1,5 +1,6 @@
 import AbstractView from '../framework/view/abstract-view';
 
+
 const createInfoTemplate = () => `
     <section class="trip-main__trip-info  trip-info">
       <div class="trip-info__main">
@@ -9,15 +10,17 @@ const createInfoTemplate = () => `
       <p class="trip-info__cost">Total: &euro;&nbsp;<span class="trip-info__cost-value">1200</span></p>
     </section>`;
 
-export default class InfoView extends AbstractView{
-  #tripPoint = null;
 
-  constructor(tripPoint) {
+export default class InfoView extends AbstractView{
+  #tripPoints = null;
+
+  constructor(tripPoints) {
     super();
-    this.#tripPoint = tripPoint;
+    this.#tripPoints = tripPoints;
   }
 
   get template() {
-    return createInfoTemplate(this.#tripPoint);
+    return createInfoTemplate(this.#tripPoints);
   }
 }
+

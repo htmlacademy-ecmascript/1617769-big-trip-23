@@ -27,7 +27,7 @@ const createOffersTemplate = (offers) => {
   `).join('');
 };
 
-const createDestinationPointTemplate = (tripPoint) => {
+const createDestinationPointTemplate = (tripPoint) => { //изменить параметры
   const { type, dateFrom, dateTo, destination, price, offers, isFavorite } = tripPoint;
   const favoriteClassName = isFavorite ? 'event__favorite-btn--active' : '';
   const lowerType = type.toLowerCase();
@@ -79,7 +79,7 @@ export default class DestinationPointView extends AbstractView {
   }
 
   get template() {
-    return createDestinationPointTemplate(this.#tripPoint, this.#offers, this.#destinations);
+    return createDestinationPointTemplate(this.#tripPoint, this.#offers, this.#destinations);// ???
   }
 
   removeElement() {
