@@ -12,7 +12,6 @@ export default class PointModel {
   constructor() {
     this.#destinations = getMockedDestionations();
     this.#offers = getMockedOffers();
-
     this.#tripPoints = getMockedPoints().map((tripPoint) => {
       const { offers } = this.#offers.find((offer) => offer.type === tripPoint.type);
 
