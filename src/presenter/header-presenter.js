@@ -1,7 +1,6 @@
-import { render } from '../render';
 import FilterView from '../view/filter-view';
 import InfoView from '../view/info-view';
-import { RenderPosition } from '../render';
+import { RenderPosition, render } from '../framework/render';
 
 export default class HeaderPresenter {
   constructor ({ filterContainer, infoContainer }) {
