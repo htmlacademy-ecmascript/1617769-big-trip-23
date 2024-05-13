@@ -3,7 +3,7 @@ import FormEditView from '../view/form-edit-view.js';
 import DestinationPointView from '../view/destination-point-view.js';
 import DestinationPointsView from '../view/destination-points-view.js';
 import SortView from '../view/sort-view';
-import { isEscapeKey } from '../utils.js';
+import { isEscapeKey } from '../utils/common.js';
 
 
 export default class MainPresenter {

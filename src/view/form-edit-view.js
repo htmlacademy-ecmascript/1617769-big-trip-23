@@ -1,6 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { BLANK_TRIP_POINT, POINT_TYPES, CITIES, DateFormats } from '../consts.js';
-import { displayDateTime } from '../utils.js';
+import { BLANK_TRIP_POINT, POINT_TYPES, CITIES, DateFormats } from '../const.js';
+import { displayDateTime } from '../utils/common.js';
 
 const createPointTypeItemTemplate = (type) => {
   const lowerType = type.toLowerCase();
