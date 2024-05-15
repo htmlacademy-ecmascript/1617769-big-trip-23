@@ -1,8 +1,8 @@
 import AbstractView from '../framework/view/abstract-view';
 import { DestinationEmptyMassages } from '../const';
 
-const createEmptyTemplate = (filter) => `
-  <p class="trip-events__msg">${DestinationEmptyMassages[filter]}</p>`;
+const createEmptyTemplate = (filters) => `
+  <p class="trip-events__msg">${DestinationEmptyMassages[filters]}</p>`;
 
 export default class DestinationEmptyView extends AbstractView {
   #filter = '';

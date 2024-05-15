@@ -30,7 +30,7 @@ const BLANK_TRIP_POINT = {
   isFavorite: false,
 };
 
-const Filters = {
+const FilterType = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
   PRESENT: 'present',
@@ -38,10 +38,10 @@ const Filters = {
 };
 
 const DestinationEmptyMassages = {
-  [Filters.EVERYTHING]: 'Click New Event to create your first point',
-  [Filters.FUTURE]: 'There are no past events now',
-  [Filters.PRESENT]: 'There are no past events now',
-  [Filters.PAST]: 'There are no past events now',
+  [FilterType.EVERYTHING]: 'Click New Event to create your first point',
+  [FilterType.FUTURE]: 'There are no past events now',
+  [FilterType.PRESENT]: 'There are no past events now',
+  [FilterType.PAST]: 'There are no past events now',
 };
 
 const DateFormats = {
@@ -69,7 +69,7 @@ export {
   MESSAGES,
   OFFERS,
   DESCRIPTIONS,
-  Filters,
+  FilterType,
   DestinationEmptyMassages
 };
 
