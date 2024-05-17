@@ -20,7 +20,7 @@ const DESCRIPTIONS = [
   'Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.'
 ];
 
-const BLANK_TRIP_POINT = { // переименовать как перечисление
+const BlankTripPoint = { // переименовать как перечисление
   type: DEFAULT_POINT_TYPE,
   dateFrom: new Date(),
   dateTo: null,
@@ -56,10 +56,12 @@ const DateFormats = {
 };
 
 export {
-  BLANK_TRIP_POINT,
+  BlankTripPoint,
+  DateFormats,
+  FilterType,
+  DestinationEmptyMassages,
   POINT_TYPES,
   CITIES,
-  DateFormats,
   FILTER_TYPES,
   DEFAULT_POINT_TYPE,
   SORT_TYPES,
@@ -68,8 +70,6 @@ export {
   POINT_COUNT,
   MESSAGES,
   OFFERS,
-  DESCRIPTIONS,
-  FilterType,
-  DestinationEmptyMassages
+  DESCRIPTIONS
 };
 

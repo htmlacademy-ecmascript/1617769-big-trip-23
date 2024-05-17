@@ -1,7 +1,7 @@
 import { getMockedPoints } from '../mock/point-mock';
 import { getMockedDestinations } from '../mock/destination';
 import { getMockedOffers } from '../mock/offer-mock';
-import { getRandomBoolean } from '../utils/common';
+import { getRandomBoolean } from '../mock/mock-utils';
 import { FilterType } from '../const';
 
 export default class PointModel {

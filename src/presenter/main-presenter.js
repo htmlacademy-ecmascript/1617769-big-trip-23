@@ -1,11 +1,10 @@
 import { render, replace } from '../framework/render.js';
+import { isEscapeKey, isEmpty } from '../utils/common.js';
 import FormEditView from '../view/form-edit-view.js';
 import DestinationPointView from '../view/destination-point-view.js';
 import DestinationPointsView from '../view/destination-points-view.js';
 import DestinationEmptyView from '../view/destination-empty-view.js';
 import SortView from '../view/sort-view';
-import { isEscapeKey, isEmpty } from '../utils/common.js';
-
 
 export default class MainPresenter {
   #container = null;

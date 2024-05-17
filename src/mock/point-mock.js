@@ -1,5 +1,5 @@
 import { getRandomArrayElement, getID, getRandomInt, getRandomBoolean,
-  getDateWithRandomTime } from '../utils/common';
+  getDateWithRandomTime } from './mock-utils';
 import { POINT_COUNT, POINT_TYPES } from '../const';
 import { getRandomDestination } from './destination';
 

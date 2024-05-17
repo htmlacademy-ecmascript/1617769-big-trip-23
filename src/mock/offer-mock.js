@@ -1,4 +1,4 @@
-import { getRandomArrayElement, getID, getRandomInt } from '../utils/common';
+import { getRandomArrayElement, getID, getRandomInt } from './mock-utils';
 import { POINT_TYPES, OFFERS } from '../const';
 
 const offerID = getID();
