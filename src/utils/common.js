@@ -42,6 +42,14 @@ const getID = () => {
 };
 const getDateWithRandomTime = (date) => dayjs(date).add(getRandomInt(500), 'minute');
 
+const firstLetterUpperCase = (word) => {
+  const [firstLetter,...rest] = word;
+  return `${firstLetter.toUpperCase()}${rest.join('')}`;
+};
+
+const isEmpty = (list) => list.length === 0;
+const getIsCheckedAttr = (isChecked) => isChecked ? 'checked' : '';
+const getIsDisabledAttr = (isDisabled) => isDisabled ? 'disabled' : '';
 
 export {
   calculateDuration,
@@ -54,5 +62,9 @@ export {
   getRandomInt,
   getID,
   getDateWithRandomTime,
-  isEscapeKey
+  isEscapeKey,
+  firstLetterUpperCase,
+  isEmpty,
+  getIsCheckedAttr,
+  getIsDisabledAttr
 };

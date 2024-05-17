@@ -2,8 +2,9 @@ import { render, replace } from '../framework/render.js';
 import FormEditView from '../view/form-edit-view.js';
 import DestinationPointView from '../view/destination-point-view.js';
 import DestinationPointsView from '../view/destination-points-view.js';
+import DestinationEmptyView from '../view/destination-empty-view.js';
 import SortView from '../view/sort-view';
-import { isEscapeKey } from '../utils/common.js';
+import { isEscapeKey, isEmpty } from '../utils/common.js';
 
 
 export default class MainPresenter {
@@ -24,11 +25,20 @@ export default class MainPresenter {
     this.#renderTripPoints(this.#model);
   }
 
+  #renderEmptyView() {
+    render(new DestinationEmptyView({filter: this.#model.filters[0]}), this.#container);
+  }
+
   #renderSortView() {
     render(new SortView(), this.#container);
   }
 
   #renderTripPoints({tripPoints}) {
+    if (isEmpty(tripPoints)){
+      this.#renderEmptyView();
+      return;
+    }
+
     for (let i = 0; i < tripPoints.length; i++) {
       render(this.#destinationPointsView, this.#container);
       this.#renderTripPoint(tripPoints[i]);
