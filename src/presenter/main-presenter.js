@@ -11,8 +11,6 @@ export default class MainPresenter {
   #model = null;
   #destinationPointsView = new DestinationPointsView();
 
-  // сделать контейнер для сортировки? boardComponent = new BoardView();
-
   constructor({container, model}) {
     this.#container = container;
     this.#model = model;
@@ -29,7 +27,10 @@ export default class MainPresenter {
   }
 
   #renderSortView() {
-    render(new SortView(), this.#container);
+    render(new SortView({
+      sortTypes: this.#model.sortTypes,
+      currentSortType: this.#model.sortTypes[0],
+    }), this.#container);
   }
 
   #renderTripPoints({tripPoints}) {
@@ -48,8 +49,9 @@ export default class MainPresenter {
     const offers = this.#model.offers;
     const destinations = this.#model.destinations;
 
-    const onEscKeydown = () => {
-      if (isEscapeKey) {
+    const onEscKeydown = (evt) => {
+      if (isEscapeKey(evt)) {
+        evt.preventDefault();
         switchToViewMode();
       }
     };
@@ -64,6 +66,7 @@ export default class MainPresenter {
       offers,
       destinations,
       onEditClick: onEditClick,
+      onFormCancel: onFormCancel,
     });
 
     const formEditView = new FormEditView({
