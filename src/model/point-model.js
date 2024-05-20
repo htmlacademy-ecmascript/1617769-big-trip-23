@@ -10,27 +10,6 @@ export default class PointModel {
   #filters = [];
   #sortTypes = [];
 
-  // constructor() {
-  //   this.#filters = Object.values(FilterType);
-  //   this.#destinations = getMockedDestinations();
-  //   this.#offers = getMockedOffers();
-  //   this.#sortTypes = SORT_TYPES;
-  //   // this.#tripPoints = []; //надо порефакторить модель
-  //   this.#tripPoints = getMockedPoints().map((tripPoint) => {
-  //     const { offers } = this.#offers.find((offer) => offer.type === tripPoint.type);
-
-  //     return {
-  //       ...tripPoint,
-  //       destination: this.#destinations.find((dest) => dest.id === tripPoint.destination),
-  //       offers: offers.map((offer) => ({
-  //         type: tripPoint.type,
-  //         ...offer,
-  //         selected: getRandomBoolean(),
-  //       })),
-  //     };
-  //   });
-  // }
-
   init() {
     this.destinations = getMockedDestinations();
     this.offers = getMockedOffers();

@@ -1,6 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { displayDate, displayDateMonth, displayDateTime, displayTime, calculateDuration } from '../utils/date.js';
-import { isEmpty } from '../utils/common';
+import { displayDate, displayDateMonth, displayDateTime, displayTime, calculateDuration } from './utils/date.js';
+import { isEmpty } from './utils/common.js';
 
 
 const createPointScheduleTemplate = (dateFrom, dateTo) => `
@@ -70,21 +70,21 @@ export default class DestinationPointView extends AbstractView {
   #destinations = null;
   #editClickHandler = null;
   #rollupButton = null;
-  // #favoriteClickHandler = null;
-  // #favoriteButton = null;
+  #favoriteClickHandler = null;
+  #favoriteButton = null;
 
-  constructor({tripPoint, offers, destinations, onEditClick}) {
+  constructor({tripPoint, offers, destinations, onEditClick, onFavoriteClick}) {
     super();
     this.#tripPoint = tripPoint;
     this.#offers = offers;
     this.#destinations = destinations;
     this.#editClickHandler = onEditClick;
-    // this.#favoriteClickHandler = onFavoriteClick;
+    this.#favoriteClickHandler = onFavoriteClick;
     this.#rollupButton = this.element.querySelector('.event__rollup-btn');
-    // this.#favoriteButton = this.element.querySelector('.event__favorite-btn');
+    this.#favoriteButton = this.element.querySelector('.event__favorite-btn');
 
     this.#rollupButton.addEventListener('click', this.#onClick);
-    // this.#favoriteButton.addEventListener('click', this.#onFavoriteClick);
+    this.#favoriteButton.addEventListener('click', this.#onFavoriteClick);
   }
 
   get template() {
@@ -94,7 +94,7 @@ export default class DestinationPointView extends AbstractView {
   removeElement() {
     super.removeElement();
     this.#rollupButton.removeEventListener('click', this.#onClick);
-    // this.#favoriteButton.removeEventListener('click', this.#onFavoriteClick);
+    this.#favoriteButton.removeEventListener('click', this.#onFavoriteClick);
   }
 
   #onClick = (evt) => {
@@ -102,10 +102,10 @@ export default class DestinationPointView extends AbstractView {
     this.#editClickHandler();
   };
 
-  // #onFavoriteClick = (evt) => {
-  //   evt.preventDefault();
-  //   this.#favoriteClickHandler();
-  // };
+  #onFavoriteClick = (evt) => {
+    evt.preventDefault();
+    this.#favoriteClickHandler();
+  };
 }
 
 

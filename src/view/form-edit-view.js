@@ -1,11 +1,11 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { BlankTripPoint, POINT_TYPES, DateFormats } from '../const.js';
-import { displayDateTime } from '../utils/date.js';
-import { firstLetterUpperCase, getIsCheckedAttr } from '../utils/common.js';
+import { displayDateTime } from './utils/date.js';
+import { firstLetterUpperCase, getIsCheckedAttr } from './utils/common.js';
 
-const createPointTypeItemTemplate = (id, type, isCheked) => `
+const createPointTypeItemTemplate = (id, type, isCheсked) => `
   <div class="event__type-item">
-    <input id="event-type-${type}-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${getIsCheckedAttr(isCheked)}>
+    <input id="event-type-${type}-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${getIsCheckedAttr(isCheсked)}>
     <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-${id}">${firstLetterUpperCase(type)}</label>
   </div>
 `;
@@ -134,6 +134,8 @@ export default class FormEditView extends AbstractView{
   #destinations = null;
   #submitHandler = null;
   #cancelHandler = null;
+  #rollupButtonElement = null;
+  #resetButtonElement = null;
 
   constructor({tripPoint = BlankTripPoint, offers, destinations, onFormSubmit, onFormCancel}) {
     super();
@@ -144,8 +146,11 @@ export default class FormEditView extends AbstractView{
     this.#cancelHandler = onFormCancel;
 
     this.element.addEventListener('submit', this.#onFormSubmit);
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onCancelForm);
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onCancelForm);
+    this.#rollupButtonElement = this.element.querySelector('.event__rollup-btn');
+    this.#resetButtonElement = this.element.querySelector('.event__reset-btn');
+
+    this.#rollupButtonElement.addEventListener('click', this.#onCancelForm);
+    this.#resetButtonElement.addEventListener('click', this.#onCancelForm);
   }
 
   get template() {
@@ -155,13 +160,13 @@ export default class FormEditView extends AbstractView{
   removeElement() {
     super.removeElement();
     this.element.removeEventListener('submit', this.#onFormSubmit);
-    this.element.querySelector('.event__rollup-btn').removeEventListener('click', this.#onCancelForm);
-    this.element.querySelector('.event__reset-btn').removeEventListener('click', this.#onCancelForm);
+    this.#rollupButtonElement.removeEventListener('click', this.#onCancelForm);
+    this.#resetButtonElement.removeEventListener('click', this.#onCancelForm);
   }
 
   #onFormSubmit = (evt) => {
     evt.preventDefault();
-    this.#submitHandler();
+    this.#submitHandler(this.#tripPoint);
   };
 
   #onCancelForm = (evt) => {
@@ -169,4 +174,3 @@ export default class FormEditView extends AbstractView{
     this.#cancelHandler();
   };
 }
-//  отрисовывается 1 раз, но должен располагаться первым в списке
