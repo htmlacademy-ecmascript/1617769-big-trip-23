@@ -1,12 +1,9 @@
-import { render, replace, remove } from '../framework/render';
+import { replace, remove } from '../framework/render';
 import FormEditView from '../view/form-edit-view';
 import DestinationPointView from '../view/destination-point-view';
 import { isEscapeKey } from '../view/utils/common';
+import { Mode } from '../const';
 
-const Mode = {
-  VIEW: 'View',
-  EDIT: 'Edit',
-};
 
 export default class PointPresenter {
   #tripPoint = null;
@@ -40,6 +37,7 @@ export default class PointPresenter {
       tripPoint,
       offers,
       destinations,
+      container: this.#container,
       onEditClick: this.#onEditClick,
       onFavoriteClick: this.#onFavoriteClick,
     });
@@ -53,7 +51,6 @@ export default class PointPresenter {
     });
 
     if (prevDestinationPointView === null || prevFormEditView === null) {
-      render(this.#destinationPointView, this.#container);
       return;
     }
 
@@ -96,7 +93,6 @@ export default class PointPresenter {
   #switchToEditMode() {
     replace(this.#formEditView, this.#destinationPointView);
     document.addEventListener('keydown', this.#onEscKeydown);
-
     this.#modeChangeHandler();
     this.#mode = Mode.EDIT;
   }
@@ -104,7 +100,6 @@ export default class PointPresenter {
   #switchToViewMode() {
     replace(this.#destinationPointView, this.#formEditView);
     document.removeEventListener('keydown', this.#onEscKeydown);
-
     this.#mode = Mode.VIEW;
   }
 

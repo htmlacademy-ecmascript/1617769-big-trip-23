@@ -1,7 +1,7 @@
-const POINT_TYPES = ['Taxi', 'Bus', 'Train', 'Ship', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
+const POINT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 const CITIES = ['Moscow', 'Tokio', 'London', 'Paris', 'Roma'];
 const DEFAULT_POINT_TYPE = 'Flight';
-const FILTER_TYPES = ['Everything', 'Future', 'Present', 'Past'];
+const FILTER_TYPES = ['everything', 'future', 'present', 'past'];
 const OFFERS = ['Add luggage', 'Switch to comfort class', 'Add meal', 'Choose seats', 'Travel by train'];
 const SELECTED_OFFERS_LIMIT = 3;
 const SOME_PICTURES_LIMIT = 3;
@@ -63,12 +63,18 @@ const DateFormats = {
   MINUTES: 'mm[m]'
 };
 
+const Mode = {
+  VIEW: 'View',
+  EDIT: 'Edit',
+};
+
 export {
   BlankTripPoint,
   DateFormats,
   FilterType,
   SortTypes,
   DestinationEmptyMassages,
+  Mode,
   POINT_TYPES,
   CITIES,
   FILTER_TYPES,

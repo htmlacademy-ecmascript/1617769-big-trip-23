@@ -1,6 +1,7 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { displayDate, displayDateMonth, displayDateTime, displayTime, calculateDuration } from './utils/date.js';
 import { isEmpty } from './utils/common.js';
+import { render } from '../framework/render.js';
 
 
 const createPointScheduleTemplate = (dateFrom, dateTo) => `
@@ -73,7 +74,7 @@ export default class DestinationPointView extends AbstractView {
   #favoriteClickHandler = null;
   #favoriteButton = null;
 
-  constructor({tripPoint, offers, destinations, onEditClick, onFavoriteClick}) {
+  constructor({tripPoint, offers, destinations, container, onEditClick, onFavoriteClick}) {
     super();
     this.#tripPoint = tripPoint;
     this.#offers = offers;
@@ -85,6 +86,7 @@ export default class DestinationPointView extends AbstractView {
 
     this.#rollupButton.addEventListener('click', this.#onClick);
     this.#favoriteButton.addEventListener('click', this.#onFavoriteClick);
+    render(this, container);
   }
 
   get template() {
