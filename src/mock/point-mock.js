@@ -29,7 +29,7 @@ const createMockPoint = () => {
     type: type,
     dateFrom: dateStart,
     dateTo: dateEnd,
-    destination: destinationId,
+    destination: destinationId, // исправить
     price: getRandomInt(1000),
     isFavorite: getRandomBoolean(),
     offers: offerIDs,

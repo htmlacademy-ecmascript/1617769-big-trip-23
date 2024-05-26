@@ -27,6 +27,18 @@ export default class PointPresenter {
     this.#renderTripPoint(tripPoint);
   }
 
+  destroy() {
+    remove(this.#destinationPointView);
+    remove(this.#formEditView);
+  }
+
+  reset() {
+    if (this.#mode !== Mode.VIEW) {
+      this.#formEditView.reset(this.#tripPoint);
+      this.#switchToViewMode();
+    }
+  }
+
   #renderTripPoint(tripPoint) {
     const offers = this.#model.offers;
     const destinations = this.#model.destinations;
@@ -59,6 +71,7 @@ export default class PointPresenter {
     }
 
     if (this.#mode === Mode.VIEW) {
+      this.#formEditView.reset(tripPoint);
       replace(this.#destinationPointView, prevDestinationPointView);
     }
 
@@ -66,24 +79,13 @@ export default class PointPresenter {
     remove(prevFormEditView);
   }
 
-  reset() {
-    if (this.#mode !== Mode.VIEW) {
-      this.#switchToViewMode();
-    }
-  }
-
-  destroy() {
-    remove(this.#destinationPointView);
-    remove(this.#formEditView);
-  }
-
-  #onEditClick = () => this.#switchToEditMode();
-  #onFormCancel = () => this.#switchToViewMode();
-
   #onFormSubmit = (tripPoint) => {
     this.#destinationPointChangeHandler(tripPoint);
     this.#switchToViewMode();
   };
+
+  #onEditClick = () => this.#switchToEditMode();
+  #onFormCancel = () => this.#switchToViewMode();
 
   #onFavoriteClick = () => this.#destinationPointChangeHandler({
     ...this.#tripPoint,

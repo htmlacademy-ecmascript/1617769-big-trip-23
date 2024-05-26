@@ -52,9 +52,9 @@ const DestinationEmptyMassages = {
 };
 
 const DateFormats = {
+  DATE: 'YYYY-MM-DD',
   DAY_MONTH: 'D MMM',
   MONTH_DAY: 'MMM D',
-  DATE: 'YYYY-MM-DD',
   TIME: 'HH:mm',
   DATE_TIME_SYSTEM: 'YYYY-MM-DDTHH:mm',
   DATE_TIME: 'YY/MM/DD HH:mm',
@@ -68,6 +68,14 @@ const Mode = {
   EDIT: 'Edit',
 };
 
+const ButtonTypes = {
+  SAVE: 'Save',
+  SAVING: 'Saving',
+  DELETE: 'Delete',
+  DELETING: 'Deleting',
+  CANCEL: 'Cancel',
+};
+
 export {
   BlankTripPoint,
   DateFormats,
@@ -75,6 +83,7 @@ export {
   SortTypes,
   DestinationEmptyMassages,
   Mode,
+  ButtonTypes,
   POINT_TYPES,
   CITIES,
   FILTER_TYPES,

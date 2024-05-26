@@ -34,7 +34,8 @@ const createDestinationPointTemplate = (tripPoint, offers, destinations) => {
   const favoriteClassName = isFavorite ? 'event__favorite-btn--active' : '';
   const {name: destinationName} = destinations.find((destination) => destination.id === tripPoint.destination);
   const {offers: typedOffers} = offers.find((offer) => offer.type === type);
-  const selectedOffers = typedOffers.filter((offer) => tripPoint.offers.includes(offer.id));
+  const selectedOffers = typedOffers.filter((offer) => tripPoint.offers.includes(offer.id)); //  проверить ID
+
 
   return `
   <li class="trip-events__item">
@@ -109,5 +110,4 @@ export default class DestinationPointView extends AbstractView {
     this.#favoriteClickHandler();
   };
 }
-
 
