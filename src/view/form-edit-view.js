@@ -118,7 +118,7 @@ const createDestinationTemplate = ({ description, pictures }) => !description ||
 
 const createFormEditTemplate = (tripPoint, offers, destinations) => {
   const { type, dateFrom, dateTo, price } = tripPoint;
-  const pointDestination = destinations.find((destination) => destination.id === tripPoint.destination);
+  const destinationPoint = destinations.find((destination) => destination.id === tripPoint.destination);
   const { offers: typedOffers } = offers.find((offer) => offer.type === type);
   const tripOffers = typedOffers.map((offer) => ({
     ...offer,
@@ -130,14 +130,14 @@ const createFormEditTemplate = (tripPoint, offers, destinations) => {
     <form class="event event--edit" action="#" method="post">
       <header class="event__header">
         ${createPointTypesTemplate(type)}
-        ${createPointDestination(type, pointDestination.name, destinations)}
+        ${createPointDestination(type, destinationPoint.name, destinations)}
         ${createTimePeriodTemplate(dateFrom, dateTo)}
         ${createPriceTemplate(price)}
         ${createButtonsTemplate(ButtonTypes.SAVE, ButtonTypes.DELETE)}
       </header>
       <section class="event__details">
         ${createOffersTemplate(tripOffers)}
-        ${createDestinationTemplate(pointDestination)}
+        ${createDestinationTemplate(destinationPoint)}
       </section>
     </form>`;
 };
