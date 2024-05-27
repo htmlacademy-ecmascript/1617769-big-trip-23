@@ -3,7 +3,7 @@ import { getMockedDestinations } from '../mock/destination';
 import { getMockedOffers } from '../mock/offer-mock';
 import { FilterType, SortTypes } from '../const';
 import { sortByDay, sortByTime, sortByPrice } from '../view/utils/common';
-import dayjs from 'dayjs';
+// import dayjs from 'dayjs';
 
 export default class PointModel {
   #tripPoints = [];
@@ -107,7 +107,7 @@ export default class PointModel {
   };
 
   #getFilteredTripPoints = (tripPoints, filter) => {
-    const currentDate = dayjs();
+    const currentDate = new Date();
     switch (filter) {
       case FilterType.EVERYTHING:
         return [...tripPoints];
