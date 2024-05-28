@@ -2,6 +2,9 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { BlankTripPoint, POINT_TYPES, DateFormats, ButtonTypes } from '../const.js';
 import { displayDateTime } from './utils/date.js';
 import { firstLetterUpperCase, getIsCheckedAttr } from './utils/common.js';
+// eslint-disable-next-line no-unused-vars
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 
 
 const createPointTypeItemTemplate = (type, isCheсked) => `
