@@ -1,8 +1,7 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
-import { BlankTripPoint, POINT_TYPES, DateFormats, ButtonTypes } from '../const.js';
+import { BlankTripPoint, POINT_TYPES, DateFormats, ButtonTypes, DefaultFlatpickrConfig } from '../const.js';
 import { displayDateTime } from './utils/date.js';
 import { firstLetterUpperCase, getIsCheckedAttr } from './utils/common.js';
-// eslint-disable-next-line no-unused-vars
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -150,6 +149,8 @@ export default class FormEditView extends AbstractStatefulView{
   #destinations = null;
   #submitHandler = null;
   #cancelHandler = null;
+  #datepickerFrom = null;
+  #datepickerTo = null;
 
   constructor({tripPoint = BlankTripPoint, offers, destinations, onFormSubmit, onFormCancel}) {
     super();
@@ -172,6 +173,8 @@ export default class FormEditView extends AbstractStatefulView{
     this.element.querySelector('.event__type-group').addEventListener('change', this.#onTypeChange);
     this.element.querySelector('#event-destination-1').addEventListener('change', this.#onDestinationChange);
     this.element.querySelector('#event-price-1').addEventListener('change', this.#onPriceChange);
+
+    this.#setDatepicker();
   }
 
   reset(tripPoint) {
@@ -180,7 +183,49 @@ export default class FormEditView extends AbstractStatefulView{
 
   removeElement() {
     super.removeElement();
+    if (this.#datepickerFrom) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
+    }
+    if (this.#datepickerTo) {
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+    }
   }
+
+  #setDatepicker() {
+    this.#datepickerFrom = flatpickr(
+      this.element.querySelector('#event-start-time-1'),
+      {
+        ...DefaultFlatpickrConfig,
+        defaultDate: this._state.dateFrom,
+        maxDate: this._setState.dateTo,
+        onChange: this.#onDateFromChange,
+      },
+    );
+
+    this.#datepickerTo = flatpickr(
+      this.element.querySelector('#event-end-time-1'),
+      {
+        ...DefaultFlatpickrConfig,
+        defaultDate: this._setState.dateTo,
+        minDate: this._state.dateFrom,
+        onChange: this.#onDateToChange,
+      },
+    );
+  }
+
+  #onDateFromChange = ([date]) => {
+    this.updateElement({
+      dateFrom: date,
+    });
+  };
+
+  #onDateToChange = ([date]) => {
+    this.updateElement({
+      dateTo: date,
+    });
+  };
 
   #onFormSubmit = (evt) => {
     evt.preventDefault();
