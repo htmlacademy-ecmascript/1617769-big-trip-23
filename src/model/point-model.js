@@ -3,9 +3,9 @@ import { getMockedDestinations } from '../mock/destination';
 import { getMockedOffers } from '../mock/offer-mock';
 import { FilterType, SortTypes } from '../const';
 import { sortByDay, sortByTime, sortByPrice } from '../view/utils/common';
-// import dayjs from 'dayjs';
+import Observable from '../framework/observable';
 
-export default class PointModel {
+export default class PointModel extends Observable{
   #tripPoints = [];
   #destinations = [];
   #offers = [];
@@ -25,8 +25,8 @@ export default class PointModel {
   }
 
   get tripPoints() {
-    const filteredTripPoints = this.#getFilteredTripPoints(this.#tripPoints, this.#currentFilter);
-    return this.#getSortedTripPoints(filteredTripPoints, this.#currentSort);
+    const filteredTripPoints = this.#getFilteredTripPoints(this.#tripPoints, this.currentFilter);
+    return this.#getSortedTripPoints(filteredTripPoints, this.currentSort);
   }
 
   set tripPoints(tripPoints) {
@@ -57,16 +57,13 @@ export default class PointModel {
     return this.#currentFilter;
   }
 
-  set currentFilter(curFilter) {
-    this.#currentFilter = curFilter;
-  }
+  set currentFilter(filter) {
+    if (filter === this.#currentFilter) {
+      return;
+    }
+    this.#currentFilter = filter;
 
-  get sortTypes() {
-    const disabledSortTypes = [SortTypes.EVENT, SortTypes.OFFERS];
-    return this.#sortTypes.map((type) => ({
-      type,
-      disabled: disabledSortTypes.includes(type),
-    }));
+    this._notify();
   }
 
   get currentSort() {
@@ -74,7 +71,11 @@ export default class PointModel {
   }
 
   set currentSort(sortType) {
+    if (sortType === this.#currentSort) {
+      return;
+    }
     this.#currentSort = sortType;
+    this._notify();
   }
 
   get tripInfo() {

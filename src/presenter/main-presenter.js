@@ -20,27 +20,25 @@ export default class MainPresenter {
   }
 
   init() {
-    this.#tripPoints = [...this.#model.tripPoints];
+    this.#tripPoints = this.#model.tripPoints;
     this.#clearTripPoints();
     this.#renderTripPoints();
   }
 
-  #renderDestinationEmptyView() {
-    this.#destinationEmptyView = new DestinationEmptyView({ filter: this.#model.currentFilter, container: this.#container });
-  }
-
-
-  #renderSortView({ sortTypes, currentSort }) {
+  #renderSortView() {
     if (this.#sortView) {
       return;
     }
 
     this.#sortView = new SortView({
-      sortTypes,
-      currentSort,
+      currentSort: this.#model.currentSort,
       container: this.#container,
       onSortTypeChange: this.#onSortTypeChange,
     });
+  }
+
+  #renderDestinationEmptyView() {
+    this.#destinationEmptyView = new DestinationEmptyView({ filter: this.#model.currentFilter, container: this.#container });
   }
 
   #renderTripPoints() {
@@ -49,18 +47,24 @@ export default class MainPresenter {
       return;
     }
 
-    this.#renderSortView(this.#model);
-    this.#destinationPointsView = new DestinationPointsView({ container: this.#container });
+    this.#renderSortView();
+    this.#renderDestinationPointsView();
+  }
 
-    this.#tripPoints.forEach((tripPoint) => {
+
+  #renderDestinationPointsView() {
+    if (!this.#destinationPointsView) {
+      this.#destinationPointsView = new DestinationPointsView({ container: this.#container });
+    }
+    this.#tripPoints.forEach((tripEvent) => {
       const pointPresenter = new PointPresenter({
         model: this.#model,
         container: this.#destinationPointsView.element,
-        onDestinationPointChange: this.#onDestinationPointChange,
+        onTripEventChange: this.#onDestinationPointChange,
         onModeChange: this.#onDestinationPointModeChange,
       });
-      pointPresenter.init(tripPoint);
-      this.#pointPresenters.set(tripPoint.id, pointPresenter);
+      pointPresenter.init(tripEvent);
+      this.#pointPresenters.set(tripEvent.id, pointPresenter);
     });
   }
 

@@ -12,6 +12,13 @@ const firstLetterUpperCase = (word) => {
   const [firstLetter,...rest] = word;
   return `${firstLetter.toUpperCase()}${rest.join('')}`;
 };
+const addComponent = (components, component) => Array.from(new Set([...components, component]));
+const removeComponent = (components, component) => components.filter((comp) => comp !== component);
+
+const getInteger = (str) => {
+  const num = parseInt(str.replace(/\D/g, ''), 10);
+  return isNaN(num) ? 0 : num;
+};
 
 export {
   isEscapeKey,
@@ -22,5 +29,8 @@ export {
   updateItem,
   sortByDay,
   sortByTime,
-  sortByPrice
+  sortByPrice,
+  addComponent,
+  removeComponent,
+  getInteger
 };

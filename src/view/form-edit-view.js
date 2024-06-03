@@ -65,9 +65,9 @@ const createPriceTemplate = (price) => `
   </div>
 `;
 
-const createButtonsTemplate = (saveButton, resetButton) => `
-  <button class="event__save-btn  btn  btn--blue" type="submit">${saveButton}</button>
-  <button class="event__reset-btn" type="reset">${resetButton}</button>
+const createButtonsTemplate = (saveButtonCaption, resetButtonCaption) => `
+  <button class="event__save-btn  btn  btn--blue" type="submit">${saveButtonCaption}</button>
+  <button class="event__reset-btn" type="reset">${resetButtonCaption}</button>
   <button class="event__rollup-btn" type="button">
     <span class="visually-hidden">Open event</span>
   </button>
@@ -75,7 +75,8 @@ const createButtonsTemplate = (saveButton, resetButton) => `
 
 const createOfferItemTemplate = ({id, title, price, type, isSelected}) => `
   <div class="event__offer-selector">
-    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${type}-${id}" type="checkbox" name="event-offer-${type}" ${isSelected ? 'checked' : ''}>
+    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${type}-${id}" type="checkbox"
+     name="event-offer-${type}" data-offer-id=${id} ${getIsCheckedAttr(isSelected)}>
     <label class="event__offer-label" for="event-offer-${type}-${id}">
       <span class="event__offer-title">${title}</span>
       &plus;&euro;&nbsp;
@@ -99,17 +100,12 @@ const createOffersTemplate = (offers) => {
     </section>`;
 };
 
-const createPhotoTapeTemplate = (pictures) => {
-  if (!pictures.length) {
-    return '';
-  }
-  return `
+const createPhotoTapeTemplate = (pictures) => !pictures.length ? '' : `
     <div class="event__photos-container">
       <div class="event__photos-tape">
         ${pictures.map(({src, description}) => `<img class="event__photo" src="${src}" alt="${description}">`).join('')}
       </div>
     </div>`;
-};
 
 const createDestinationTemplate = ({ description, pictures }) => !description || !pictures.length ? '' : `
   <section class="event__section  event__section--destination">
@@ -129,7 +125,7 @@ const createFormEditTemplate = (tripPoint, offers, destinations) => {
   }));
 
   return `
-    <form class="event event--edit" action="#" method="post">
+    <form class="event event--edit" action="#" method="post" data-offer-id>
       <header class="event__header">
         ${createPointTypesTemplate(type)}
         ${createPointDestination(type, destinationPoint.name, destinations)}
@@ -171,10 +167,13 @@ export default class FormEditView extends AbstractStatefulView{
     this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onCancelForm);
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onCancelForm);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#onTypeChange);
-    this.element.querySelector('#event-destination-1').addEventListener('change', this.#onDestinationChange);
-    this.element.querySelector('#event-price-1').addEventListener('change', this.#onPriceChange);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#onDestinationChange);
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#onPriceChange);
 
-    this.#setDatepicker();
+    this.#setDatepicker({
+      startTimeElement: this.element.querySelector('#event-start-time-1'),
+      endTimeElement: this.element.querySelector('#event-end-time-1')
+    });
   }
 
   reset(tripPoint) {
@@ -193,9 +192,9 @@ export default class FormEditView extends AbstractStatefulView{
     }
   }
 
-  #setDatepicker() {
+  #setDatepicker({ startTimeElement, endTimeElement }) {
     this.#datepickerFrom = flatpickr(
-      this.element.querySelector('#event-start-time-1'),
+      startTimeElement,
       {
         ...DefaultFlatpickrConfig,
         defaultDate: this._state.dateFrom,
@@ -205,7 +204,7 @@ export default class FormEditView extends AbstractStatefulView{
     );
 
     this.#datepickerTo = flatpickr(
-      this.element.querySelector('#event-end-time-1'),
+      endTimeElement,
       {
         ...DefaultFlatpickrConfig,
         defaultDate: this._setState.dateTo,
@@ -264,6 +263,5 @@ export default class FormEditView extends AbstractStatefulView{
       price: addedPrice,
     });
   };
-
-
 }
+
