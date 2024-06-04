@@ -3,11 +3,11 @@ import DestinationPointsView from '../view/destination-points-view.js';
 import DestinationEmptyView from '../view/destination-empty-view.js';
 import SortView from '../view/sort-view';
 import PointPresenter from './point-presenter.js';
-import { updateItem } from './presenter-utils.js';
+import { UserAction, UpdateType } from '../const.js';
 
 export default class MainPresenter {
-  #container = null;
   #model = null;
+  #container = null;
   #tripPoints = [];
   #destinationPointsView = null;
   #sortView = null;
@@ -17,12 +17,12 @@ export default class MainPresenter {
   constructor({container, model}) {
     this.#container = container;
     this.#model = model;
+    this.#model.addObserver(this.#onModelChange);
   }
 
   init() {
     this.#tripPoints = this.#model.tripPoints;
-    this.#clearTripPoints();
-    this.#renderTripPoints();
+    this.#onModelChange(UpdateType.MAJOR);
   }
 
   #renderSortView() {
@@ -41,6 +41,22 @@ export default class MainPresenter {
     this.#destinationEmptyView = new DestinationEmptyView({ filter: this.#model.currentFilter, container: this.#container });
   }
 
+  #renderDestinationPointsView() {
+    if (!this.#destinationPointsView) {
+      this.#destinationPointsView = new DestinationPointsView({ container: this.#container });
+    }
+    this.#tripPoints.forEach((tripPoint) => {
+      const pointPresenter = new PointPresenter({
+        model: this.#model,
+        container: this.#destinationPointsView.element,
+        onTripEventChange: this.#onDestinationPointChange,
+        onModeChange: this.#onDestinationPointModeChange,
+      });
+      pointPresenter.init(tripPoint);
+      this.#pointPresenters.set(tripPoint.id, pointPresenter);
+    });
+  }
+
   #renderTripPoints() {
     if (isEmpty(this.#tripPoints)){
       this.#renderDestinationEmptyView();
@@ -51,23 +67,6 @@ export default class MainPresenter {
     this.#renderDestinationPointsView();
   }
 
-
-  #renderDestinationPointsView() {
-    if (!this.#destinationPointsView) {
-      this.#destinationPointsView = new DestinationPointsView({ container: this.#container });
-    }
-    this.#tripPoints.forEach((tripEvent) => {
-      const pointPresenter = new PointPresenter({
-        model: this.#model,
-        container: this.#destinationPointsView.element,
-        onTripEventChange: this.#onDestinationPointChange,
-        onModeChange: this.#onDestinationPointModeChange,
-      });
-      pointPresenter.init(tripEvent);
-      this.#pointPresenters.set(tripEvent.id, pointPresenter);
-    });
-  }
-
   #clearTripPoints() {
     this.#pointPresenters.forEach((pointPresenter) => pointPresenter.destroy());
     this.#pointPresenters.clear();
@@ -76,18 +75,39 @@ export default class MainPresenter {
     }
   }
 
-  #onDestinationPointChange = (updatedTripPoint) => {
-    this.#tripPoints = updateItem(this.#tripPoints, updatedTripPoint);
-    this.#pointPresenters.get(updatedTripPoint.id).init(updatedTripPoint);
+  #onDestinationPointChange = (actionType, updateType, data) => {
+    switch (actionType) {
+      case UserAction.UPDATE:
+        this.#model.updateTripEvent(updateType, data);
+        break;
+      case UserAction.ADD:
+        this.#model.addTripEvent(updateType, data);
+        break;
+      case UserAction.DELETE:
+        this.#model.deleteTripEvent(updateType, data);
+        break;
+    }
+  };
+
+  #onModelChange = (updateType, data) => {
+    switch (updateType) {
+      case UpdateType.PATCH:
+        this.#pointPresenters.get(data.id).init(data);
+        break;
+      case UpdateType.MINOR:
+        this.#clearTripPoints();
+        this.#renderTripPoints();
+        break;
+      case UpdateType.MAJOR:
+        this.#clearTripPoints();
+        this.#renderTripPoints();
+        break;
+    }
   };
 
   #onDestinationPointModeChange = () => this.#pointPresenters.forEach((presenter) => presenter.reset());
 
   #onSortTypeChange = (newSort) => {
-    if (this.#model.currentSort === newSort) {
-      return;
-    }
-
     this.#model.currentSort = newSort;
     this.init();
   };

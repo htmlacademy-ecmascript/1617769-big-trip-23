@@ -19,7 +19,8 @@ const DESCRIPTIONS = [
   'Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.'
 ];
 
-const BlankTripPoint = { // переименовать как перечисление
+const BlankTripPoint = {
+  id: null,
   type: DEFAULT_POINT_TYPE,
   dateFrom: new Date(),
   dateTo: null,
@@ -50,13 +51,6 @@ const FilterType = {
   FUTURE: 'future',
   PRESENT: 'present',
   PAST: 'past',
-};
-
-const DestinationEmptyMassages = {
-  [FilterType.EVERYTHING]: 'Click New Event to create your first point',
-  [FilterType.FUTURE]: 'There are no past events now',
-  [FilterType.PRESENT]: 'There are no past events now',
-  [FilterType.PAST]: 'There are no past events now',
 };
 
 const DateFormats = {
@@ -90,16 +84,30 @@ const ButtonTypes = {
   CANCEL: 'Cancel',
 };
 
+const UserAction = {
+  ADD: 'ADD',
+  UPDATE: 'UPDATE',
+  DELETE: 'DELETE',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+  ERROR: 'ERROR',
+};
+
 export {
   BlankTripPoint,
   DateFormats,
   FilterType,
   SortTypes,
-  DestinationEmptyMassages,
   Mode,
   ButtonTypes,
   DefaultFlatpickrConfig,
   SortInputTypes,
+  UserAction,
+  UpdateType,
   POINT_TYPES,
   CITIES,
   FILTER_TYPES,

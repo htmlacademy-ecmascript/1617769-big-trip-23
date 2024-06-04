@@ -2,7 +2,7 @@ import { replace, remove } from '../framework/render';
 import FormEditView from '../view/form-edit-view';
 import DestinationPointView from '../view/destination-point-view';
 import { isEscapeKey } from '../view/utils/common';
-import { Mode } from '../const';
+import { Mode, UserAction, UpdateType} from '../const';
 
 
 export default class PointPresenter {
@@ -80,17 +80,31 @@ export default class PointPresenter {
   }
 
   #onFormSubmit = (tripPoint) => {
-    this.#destinationPointChangeHandler(tripPoint);
+    this.#destinationPointChangeHandler(
+      UserAction.UPDATE,
+      UpdateType.MINOR,
+      tripPoint
+    );
     this.#switchToViewMode();
   };
 
   #onEditClick = () => this.#switchToEditMode();
-  #onFormCancel = () => this.#switchToViewMode();
+  #onFormCancel = (tripPoint) => {
+    if (tripPoint.id) {
+      this.#destinationPointChangeHandler(
+        UserAction.DELETE,
+        UpdateType.MINOR,
+        tripPoint
+      );
+    }
+    this.#switchToViewMode();
+  };
 
-  #onFavoriteClick = () => this.#destinationPointChangeHandler({
-    ...this.#tripPoint,
-    isFavorite: !this.#tripPoint.isFavorite,
-  });
+  #onFavoriteClick = () => this.#destinationPointChangeHandler(
+    UserAction.UPDATE,
+    UpdateType.PATCH,
+    { ...this.#tripPoint, isFavorite: !this.#tripPoint.isFavorite }
+  );
 
   #switchToEditMode() {
     replace(this.#formEditView, this.#destinationPointView);
