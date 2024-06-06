@@ -12,7 +12,7 @@ const run = () => {
   const pointModel = new PointModel();
   pointModel.init();
 
-  const headerPresenter = new HeaderPresenter(
+  new HeaderPresenter(
     {
       container: {
         filter: filtersElement,
@@ -22,15 +22,12 @@ const run = () => {
     }
   );
 
-  const mainPresenter = new MainPresenter(
+  new MainPresenter(
     {
       container: pointsElement,
       model: pointModel
     }
   );
-
-  headerPresenter.init();
-  mainPresenter.init();
 };
 
 run();

@@ -77,7 +77,7 @@ const createButtonsTemplate = (isNew, isDisabled) => {
   return `
     <button class="event__save-btn  btn  btn--blue" type="submit" ${getIsDisabledAttr(isDisabled)}>${ButtonTypes.SAVE}</button>
     <button class="event__reset-btn" type="reset" ${getIsDisabledAttr(isDisabled)}>${resetButtonCaption}</button>
-    ${createRollupButtonTemplate(isNew, isDisabled)}`;
+    ${createRollupButtonTemplate(!isNew, isDisabled)}`;
 };
 
 const createOfferItemTemplate = ({id, title, price, type, isSelected}) => `
@@ -92,20 +92,13 @@ const createOfferItemTemplate = ({id, title, price, type, isSelected}) => `
   </div>
 `;
 
-const createOffersTemplate = (offers) => {
-  if (!offers.length) {
-    return '';
-  }
-
-  return `
-    <section class="event__section  event__section--offers">
-      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
-      <div class="event__available-offers">
-        ${offers.map((offer) => createOfferItemTemplate(offer)).join('')}
-      </div>
-    </section>`;
-};
+const createOffersTemplate = (offers) => !offers.length ? '' : `
+<section class="event__section  event__section--offers">
+  <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+  <div class="event__available-offers">
+    ${offers.map((offer) => createOfferItemTemplate(offer)).join('')}
+  </div>
+</section>`;
 
 const createPhotoTapeTemplate = (pictures) => !pictures.length ? '' : `
     <div class="event__photos-container">
@@ -172,8 +165,9 @@ export default class FormEditView extends AbstractStatefulView{
   }
 
   _restoreHandlers() {
+    this.element.addEventListener('submit', this.#onFormSubmit);
     this.element.removeEventListener('submit', this.#onFormSubmit);
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onCancelForm);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#getResetHandler());
     this.element.querySelector('.event__type-group').addEventListener('change', this.#onTypeChange);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#onDestinationChange);
     this.element.querySelector('.event__input--price').addEventListener('change', this.#onPriceChange);
@@ -198,16 +192,15 @@ export default class FormEditView extends AbstractStatefulView{
   }
 
   removeElement() {
+    this.#datepickerFrom.destroy();
+    this.#datepickerFrom = null;
+    this.#datepickerTo.destroy();
+    this.#datepickerTo = null;
+
     super.removeElement();
-    if (this.#datepickerFrom) {
-      this.#datepickerFrom.destroy();
-      this.#datepickerFrom = null;
-    }
-    if (this.#datepickerTo) {
-      this.#datepickerTo.destroy();
-      this.#datepickerTo = null;
-    }
   }
+
+  #getResetHandler = () => this._state.id === null ? this.#onCancelForm : this.#onFormDelete;
 
   #setDatepicker({ startTimeElement, endTimeElement }) {
     this.#datepickerFrom = flatpickr(
@@ -215,7 +208,7 @@ export default class FormEditView extends AbstractStatefulView{
       {
         ...DefaultFlatpickrConfig,
         defaultDate: this._state.dateFrom,
-        maxDate: this._setState.dateTo,
+        maxDate: this._state.dateTo,
         onChange: this.#onDateFromChange,
       },
     );
@@ -224,7 +217,7 @@ export default class FormEditView extends AbstractStatefulView{
       endTimeElement,
       {
         ...DefaultFlatpickrConfig,
-        defaultDate: this._setState.dateTo,
+        defaultDate: this._state.dateTo,
         minDate: this._state.dateFrom,
         onChange: this.#onDateToChange,
       },
@@ -250,7 +243,12 @@ export default class FormEditView extends AbstractStatefulView{
 
   #onCancelForm = (evt) => {
     evt.preventDefault();
-    this.#cancelHandler(this._state);
+    this.#cancelHandler();
+  };
+
+  #onFormDelete = (evt) => {
+    evt.preventDefault();
+    this.#deleteHandler(this._state);
   };
 
   #onTypeChange = (evt) => {
@@ -282,10 +280,10 @@ export default class FormEditView extends AbstractStatefulView{
   };
 
   #onOfferClick = (evt) => {
-    const { dataset: { offerId }, checked } = evt.target;
+    const { dataset: { offerID }, checked } = evt.target;
     const offers = checked
-      ? addComponent(this._state.offers, offerId)
-      : removeComponent(this._state.offers, offerId);
+      ? addComponent(this._state.offers, offerID)
+      : removeComponent(this._state.offers, offerID);
     this.updateElement({
       offers,
     });

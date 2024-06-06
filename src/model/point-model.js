@@ -1,8 +1,8 @@
+import Observable from '../framework/observable';
 import { getMockedPoints } from '../mock/point-mock';
 import { getMockedDestinations } from '../mock/destination';
 import { getMockedOffers } from '../mock/offer-mock';
-import { FilterType, SortTypes, UpdateType } from '../const';
-import Observable from '../framework/observable';
+import { FilterType, SortTypes } from '../const';
 import { FilteredTypes } from '../view/utils/filter';
 import { SortedTypes } from '../view/utils/sort';
 import { removeComponent } from '../view/utils/common';
@@ -18,11 +18,10 @@ export default class PointModel extends Observable{
   #currentSort = this.#defaultSortType;
 
   init() {
-    this.destinations = getMockedDestinations();
-    this.offers = getMockedOffers();
-    this.tripPoints = getMockedPoints();
+    this.#destinations = getMockedDestinations();
+    this.#offers = getMockedOffers();
+    this.#tripPoints = getMockedPoints();
     this.#filters = Object.values(FilterType);
-    this._notify(UpdateType.MAJOR);
   }
 
   get tripPoints() {
@@ -58,14 +57,6 @@ export default class PointModel extends Observable{
     return this.#currentSort;
   }
 
-  set currentSort(sortType) {
-    if (sortType === this.#currentSort) {
-      return;
-    }
-    this.#currentSort = sortType;
-    this._notify();
-  }
-
   get tripInfo() {
     const tripInfo = this.#getSortedTripPoints(this.#tripPoints, this.#defaultSortType);
     const firstPoint = tripInfo[tripInfo.length - 1];
@@ -82,27 +73,35 @@ export default class PointModel extends Observable{
     };
   }
 
-  addTripPoint(updateType, tripPoint) {
-    this.#tripPoints.push(tripPoint);
-    this._notify(updateType, tripPoint);
+  setCurrentSort(UpdateType, sortType) {
+    if (sortType === this.#currentSort) {
+      return;
+    }
+    this.#currentSort = sortType;
+    this._notify(UpdateType, sortType);
   }
 
-  updateTripPoint(updateType, tripPoint) {
-    const checkedTripPoint = this.#findTripPoint(tripPoint.id);
-    if (!checkedTripPoint) {
+  addTripPoint(UpdateType, tripPoint) {
+    this.#tripPoints.push(tripPoint);
+    this._notify(UpdateType, tripPoint);
+  }
+
+  updateTripPoint(UpdateType, tripPoint) {
+    const updateTripPoint = this.#findTripPoint(tripPoint.id);
+    if (!updateTripPoint) {
       throw new Error(`Can't update trip event ${tripPoint.id}`);
     }
-    Object.assign(checkedTripPoint, tripPoint);
-    this._notify(updateType, tripPoint);
+    Object.assign(updateTripPoint, tripPoint);
+    this._notify(UpdateType, tripPoint);
   }
 
-  deleteTripPoint(updateType, tripPoint) {
-    const checkedTripPoint = this.#findTripPoint(tripPoint.id);
-    if (!checkedTripPoint) {
+  deleteTripPoint(UpdateType, tripPoint) {
+    const updateTripPoint = this.#findTripPoint(tripPoint.id);
+    if (!updateTripPoint) {
       throw new Error(`Can't delete trip event ${tripPoint.id}`);
     }
-    removeComponent(this.#tripPoints, checkedTripPoint);
-    this._notify(updateType);
+    this.#tripPoints = removeComponent(this.#tripPoints, updateTripPoint);
+    this._notify(UpdateType);
   }
 
   #getSortedTripPoints = (tripPoints, sortType) => tripPoints.sort(SortedTypes[sortType]);

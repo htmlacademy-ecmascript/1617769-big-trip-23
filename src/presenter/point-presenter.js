@@ -22,6 +22,26 @@ export default class PointPresenter {
     this.#modeChangeHandler = onModeChange;
   }
 
+  get mode() {
+    return this.#mode;
+  }
+
+  set mode(newMode) {
+    if (this.mode === newMode) {
+      return;
+    }
+
+    switch (newMode) {
+      case Mode.VIEW:
+        this.#switchToViewMode();
+        break;
+      case Mode.EDIT:
+        this.#switchToEditMode();
+        break;
+    }
+    this.#mode = newMode;
+  }
+
   init(tripPoint) {
     this.#tripPoint = tripPoint;
     this.#renderTripPoint(tripPoint);
@@ -30,13 +50,11 @@ export default class PointPresenter {
   destroy() {
     remove(this.#destinationPointView);
     remove(this.#formEditView);
+    this.#removeListeners();
   }
 
   reset() {
-    if (this.#mode !== Mode.VIEW) {
-      this.#formEditView.reset(this.#tripPoint);
-      this.#switchToViewMode();
-    }
+    this.mode = Mode.VIEW;
   }
 
   #renderTripPoint(tripPoint) {
@@ -59,6 +77,7 @@ export default class PointPresenter {
       offers,
       destinations,
       onFormSubmit: this.#onFormSubmit,
+      onFormDelete: this.#onFormDelete,
       onFormCancel: this.#onFormCancel,
     });
 
@@ -66,11 +85,11 @@ export default class PointPresenter {
       return;
     }
 
-    if (this.#mode === Mode.EDIT) {
+    if (this.mode === Mode.EDIT) {
       replace(this.#formEditView, prevFormEditView);
     }
 
-    if (this.#mode === Mode.VIEW) {
+    if (this.mode === Mode.VIEW) {
       this.#formEditView.reset(tripPoint);
       replace(this.#destinationPointView, prevDestinationPointView);
     }
@@ -85,11 +104,13 @@ export default class PointPresenter {
       UpdateType.MINOR,
       tripPoint
     );
-    this.#switchToViewMode();
   };
 
-  #onEditClick = () => this.#switchToEditMode();
-  #onFormCancel = (tripPoint) => {
+  #onEditClick = () => (this.mode = Mode.EDIT);
+  #onFormCancel = () => (this.mode = Mode.VIEW);
+  #addListeners = () => document.addEventListener('keydown', this.#onEscKeydown);
+  #removeListeners = () => document.removeEventListener('keydown', this.#onEscKeydown);
+  #onFormDelete = (tripPoint) => {
     if (tripPoint.id) {
       this.#destinationPointChangeHandler(
         UserAction.DELETE,
@@ -97,7 +118,6 @@ export default class PointPresenter {
         tripPoint
       );
     }
-    this.#switchToViewMode();
   };
 
   #onFavoriteClick = () => this.#destinationPointChangeHandler(
@@ -108,21 +128,19 @@ export default class PointPresenter {
 
   #switchToEditMode() {
     replace(this.#formEditView, this.#destinationPointView);
-    document.addEventListener('keydown', this.#onEscKeydown);
+    this.#addListeners();
     this.#modeChangeHandler();
-    this.#mode = Mode.EDIT;
   }
 
   #switchToViewMode() {
     replace(this.#destinationPointView, this.#formEditView);
-    document.removeEventListener('keydown', this.#onEscKeydown);
-    this.#mode = Mode.VIEW;
+    this.#removeListeners();
   }
 
   #onEscKeydown = (evt) => {
     if (isEscapeKey(evt)) {
       evt.preventDefault();
-      this.#switchToViewMode();
+      this.mode = Mode.VIEW;
     }
   };
 }
