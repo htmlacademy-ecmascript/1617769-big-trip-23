@@ -2,7 +2,7 @@ import Observable from '../framework/observable';
 import { getMockedPoints } from '../mock/point-mock';
 import { getMockedDestinations } from '../mock/destination';
 import { getMockedOffers } from '../mock/offer-mock';
-import { FilterType, SortTypes, UpdateType } from '../const';
+import { FilterType, SortTypes, UpdateType } from '../const'; //исправить
 import { FilteredTypes } from '../view/utils/filter';
 import { SortedTypes } from '../view/utils/sort';
 import { removeComponent } from '../view/utils/common';
@@ -16,14 +16,6 @@ export default class PointModel extends Observable{
   #defaultSortType = SortTypes.DAY;
   #currentFilter = this.#defaultFilter;
   #currentSort = this.#defaultSortType;
-
-  init() {
-    this.#destinations = getMockedDestinations();
-    this.#offers = getMockedOffers();
-    this.#tripPoints = getMockedPoints();
-    this.#filters = Object.values(FilterType);
-    this._notify(UpdateType.MAJOR);
-  }
 
   get tripPoints() {
     const filteredTripPoints = this.#getFilteredTripPoints(this.#tripPoints, this.currentFilter);
@@ -58,6 +50,10 @@ export default class PointModel extends Observable{
     return this.#currentSort;
   }
 
+  set currentSort(sortType) {
+    this.#currentSort = sortType;
+  }
+
   get tripInfo() {
     const tripInfo = this.#getSortedTripPoints(this.#tripPoints, this.#defaultSortType);
     const firstPoint = tripInfo[tripInfo.length - 1];
@@ -74,12 +70,20 @@ export default class PointModel extends Observable{
     };
   }
 
-  setCurrentSort(updateType, sortType) {
-    if (sortType === this.#currentSort) {
+  init() {
+    this.#destinations = getMockedDestinations();
+    this.#offers = getMockedOffers();
+    this.#tripPoints = getMockedPoints();
+    this.#filters = Object.values(FilterType);
+    this._notify(UpdateType.MAJOR);
+  }
+
+  setCurrentFilter(updateType, filterType) {
+    if (filterType === this.#currentSort) {
       return;
     }
-    this.#currentSort = sortType;
-    this._notify(updateType, sortType);
+    this.#currentSort = filterType;
+    this._notify(updateType, filterType);
   }
 
   addTripPoint(updateType, tripPoint) {
@@ -88,12 +92,12 @@ export default class PointModel extends Observable{
   }
 
   updateTripPoint(updateType, tripPoint) {
-    const updateTripPoint = this.#findTripPoint(tripPoint.id);
-    if (!updateTripPoint) {
+    const selectedPoint = this.#findTripPoint(tripPoint.id);
+    if (!selectedPoint) {
       throw new Error(`Can't update trip event ${tripPoint.id}`);
     }
-    Object.assign(updateTripPoint, tripPoint);
-    this._notify(UpdateType, tripPoint);
+    Object.assign(selectedPoint, tripPoint);
+    this._notify(updateType, tripPoint);
   }
 
   deleteTripPoint(updateType, tripPoint) {

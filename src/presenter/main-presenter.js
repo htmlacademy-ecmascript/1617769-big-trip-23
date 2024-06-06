@@ -3,7 +3,7 @@ import DestinationPointsView from '../view/destination-points-view.js';
 import DestinationEmptyView from '../view/destination-empty-view.js';
 import SortView from '../view/sort-view';
 import PointPresenter from './point-presenter.js';
-import { UserAction, UpdateType } from '../const.js';
+import { UserAction, UpdateType, SortTypes } from '../const.js';
 
 export default class MainPresenter {
   #model = null;
@@ -17,7 +17,7 @@ export default class MainPresenter {
     this.#container = container;
     this.#model = model;
     this.#model.addObserver(this.#onModelChange);
-    this.#onModelChange(UpdateType.MAJOR);
+    this.#renderTripPoints();
   }
 
   get tripPoints() {
@@ -25,10 +25,6 @@ export default class MainPresenter {
   }
 
   #renderSortView() {
-    if (this.#sortView) {
-      return;
-    }
-
     this.#sortView = new SortView({
       currentSort: this.#model.currentSort,
       container: this.#container,
@@ -67,23 +63,26 @@ export default class MainPresenter {
     this.#renderDestinationPointsView(tripPoints);
   }
 
-  #clearTripPoints() {
+  #clearTripPoints({resetSortType = false} = {}) {
     this.#pointPresenters.forEach((pointPresenter) => pointPresenter.destroy());
     this.#pointPresenters.clear();
+    if (this.#sortView) {
+      this.#sortView.destroy();
+    }
     if (this.#destinationEmptyView) {
       this.#destinationEmptyView.destroy();
+    }
+    if (resetSortType) {
+      this.#model.currentSort = SortTypes.DAY;
     }
   }
 
   #onDestinationPointModeChange = () => this.#pointPresenters.forEach((presenter) => presenter.reset());
 
-  #onSortTypeChange = (newSort) =>
-    this.#onDestinationPointChange(
-      UserAction.SORT,
-      UpdateType.MINOR,
-      newSort
-    );
-
+  #onSortTypeChange = (sortType) => {
+    this.#model.currentSort = sortType;
+    this.#onModelChange(UpdateType.MINOR);
+  };
 
   #onDestinationPointChange = (actionType, updateType, data) => {
     switch (actionType) {
@@ -95,9 +94,6 @@ export default class MainPresenter {
         break;
       case UserAction.DELETE:
         this.#model.deleteTripEvent(updateType, data);
-        break;
-      case UserAction.SORT:
-        this.#model.setCurrentSort(updateType, data);
         break;
     }
   };
@@ -112,7 +108,7 @@ export default class MainPresenter {
         this.#renderTripPoints();
         break;
       case UpdateType.MAJOR:
-        this.#clearTripPoints();
+        this.#clearTripPoints({resetSortType: true});
         this.#renderTripPoints();
         break;
     }

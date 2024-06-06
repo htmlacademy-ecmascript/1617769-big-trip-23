@@ -1,8 +1,9 @@
-import { replace, remove } from '../framework/render';
+import { replace } from '../framework/render';
 import FormEditView from '../view/form-edit-view';
 import DestinationPointView from '../view/destination-point-view';
 import { isEscapeKey } from '../view/utils/common';
 import { Mode, UserAction, UpdateType} from '../const';
+import { isDatesEqual } from '../view/utils/date';
 
 
 export default class PointPresenter {
@@ -48,8 +49,8 @@ export default class PointPresenter {
   }
 
   destroy() {
-    remove(this.#destinationPointView);
-    remove(this.#formEditView);
+    this.#destinationPointView.destroy();
+    this.#formEditView.destroy();
     this.#removeListeners();
   }
 
@@ -94,22 +95,16 @@ export default class PointPresenter {
       replace(this.#destinationPointView, prevDestinationPointView);
     }
 
-    remove(prevDestinationPointView);
-    remove(prevFormEditView);
+    prevDestinationPointView.destroy();
+    prevFormEditView.destroy();
   }
 
   #onFormSubmit = (tripPoint) => {
-    this.#destinationPointChangeHandler(
-      UserAction.UPDATE,
-      UpdateType.MINOR,
-      tripPoint
-    );
+    const isMinorUpdate = !isDatesEqual(this.#tripPoint.dateFrom, tripPoint.dateFrom) ||
+      !isDatesEqual(this.#tripPoint.dateTo, tripPoint.dateTo) ;
+    this.#destinationPointChangeHandler(UserAction.UPDATE, isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH, tripPoint);
   };
 
-  #onEditClick = () => (this.mode = Mode.EDIT);
-  #onFormCancel = () => (this.mode = Mode.VIEW);
-  #addListeners = () => document.addEventListener('keydown', this.#onEscKeydown);
-  #removeListeners = () => document.removeEventListener('keydown', this.#onEscKeydown);
   #onFormDelete = (tripPoint) => {
     if (tripPoint.id) {
       this.#destinationPointChangeHandler(
@@ -133,6 +128,7 @@ export default class PointPresenter {
   }
 
   #switchToViewMode() {
+    this.#formEditView.reset(this.#tripPoint);
     replace(this.#destinationPointView, this.#formEditView);
     this.#removeListeners();
   }
@@ -143,4 +139,9 @@ export default class PointPresenter {
       this.mode = Mode.VIEW;
     }
   };
+
+  #onEditClick = () => (this.mode = Mode.EDIT);
+  #onFormCancel = () => (this.mode = Mode.VIEW);
+  #addListeners = () => document.addEventListener('keydown', this.#onEscKeydown);
+  #removeListeners = () => document.removeEventListener('keydown', this.#onEscKeydown);
 }

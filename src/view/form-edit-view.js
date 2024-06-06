@@ -2,6 +2,7 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { BlankTripPoint, POINT_TYPES, DateFormats, ButtonTypes, DefaultFlatpickrConfig } from '../const.js';
 import { displayDateTime } from './utils/date.js';
 import { firstLetterUpperCase, getIsCheckedAttr, getIsDisabledAttr, addComponent, removeComponent, getInteger } from './utils/common.js';
+import { remove } from '../framework/render.js';
 import he from 'he';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
@@ -31,7 +32,7 @@ const createPointTypesTemplate = (type) => `
   </div>
 `;
 
-const createPointDestination = (type, destinationName, destinations) => `
+const createPointDestination = (type, {name: destinationName = ''} = {}, destinations) => `
   <div class="event__field-group  event__field-group--destination">
     <label class="event__label  event__type-output" for="event-destination-1">
       ${type}
@@ -110,12 +111,18 @@ const createPhotoTapeTemplate = (pictures) => !pictures.length ? '' : `
       </div>
     </div>`;
 
-const createDestinationTemplate = ({ description, pictures }) => !description || !pictures.length ? '' : `
-  <section class="event__section  event__section--destination">
-    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-    <p class="event__destination-description">${description}</p>
-    ${createPhotoTapeTemplate(pictures)}
-  </section>`;
+const createDestinationTemplate = (destination) => {
+  if (!destination) {
+    return '';
+  }
+  const { description, pictures } = destination;
+  return !description || !pictures.length ? '' : `
+    <section class="event__section  event__section--destination">
+      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+      <p class="event__destination-description">${description}</p>
+      ${createPhotoTapeTemplate(pictures)}
+    </section>`;
+};
 
 const createFormEditTemplate = (tripPoint, offers, destinations) => {
   const {type, dateFrom, dateTo, price, isAdding, isSaving, isDeleting } = tripPoint;
@@ -128,10 +135,10 @@ const createFormEditTemplate = (tripPoint, offers, destinations) => {
   }));
 
   return `
-    <form class="event event--edit" action="#" method="post" data-offer-id>
+    <form class="event event--edit" action="#" method="post">
       <header class="event__header">
         ${createPointTypesTemplate(type)}
-        ${createPointDestination(type, destinationPoint.name, destinations)}
+        ${createPointDestination(type, destinationPoint, destinations)}
         ${createTimePeriodTemplate(dateFrom, dateTo)}
         ${createPriceTemplate(price)}
         ${createButtonsTemplate(isAdding, isSaving, isDeleting)}
@@ -160,6 +167,7 @@ export default class FormEditView extends AbstractStatefulView{
     this.#submitHandler = onFormSubmit;
     this.#deleteHandler = onFormDelete;
     this.#cancelHandler = onFormCancel;
+
     this._restoreHandlers();
   }
 
@@ -193,6 +201,11 @@ export default class FormEditView extends AbstractStatefulView{
   reset(tripPoint) {
     this.updateElement(tripPoint);
   }
+
+  destroy() {
+    remove(this);
+  }
+
 
   removeElement() {
     this.#datepickerFrom.destroy();
@@ -241,7 +254,7 @@ export default class FormEditView extends AbstractStatefulView{
 
   #onFormSubmit = (evt) => {
     evt.preventDefault();
-    this.#submitHandler(this._state);
+    this.#submitHandler(FormEditView.parseStateToEvent(this._state));
   };
 
   #onCancelForm = (evt) => {
@@ -251,7 +264,7 @@ export default class FormEditView extends AbstractStatefulView{
 
   #onDeleteForm = (evt) => {
     evt.preventDefault();
-    this.#deleteHandler(this._state);
+    this.#deleteHandler(FormEditView.parseStateToEvent(this._state));
   };
 
   #onTypeChange = (evt) => {
