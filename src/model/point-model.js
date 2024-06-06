@@ -2,7 +2,7 @@ import Observable from '../framework/observable';
 import { getMockedPoints } from '../mock/point-mock';
 import { getMockedDestinations } from '../mock/destination';
 import { getMockedOffers } from '../mock/offer-mock';
-import { FilterType, SortTypes } from '../const';
+import { FilterType, SortTypes, UpdateType } from '../const';
 import { FilteredTypes } from '../view/utils/filter';
 import { SortedTypes } from '../view/utils/sort';
 import { removeComponent } from '../view/utils/common';
@@ -22,6 +22,7 @@ export default class PointModel extends Observable{
     this.#offers = getMockedOffers();
     this.#tripPoints = getMockedPoints();
     this.#filters = Object.values(FilterType);
+    this._notify(UpdateType.MAJOR);
   }
 
   get tripPoints() {
@@ -73,20 +74,20 @@ export default class PointModel extends Observable{
     };
   }
 
-  setCurrentSort(UpdateType, sortType) {
+  setCurrentSort(updateType, sortType) {
     if (sortType === this.#currentSort) {
       return;
     }
     this.#currentSort = sortType;
-    this._notify(UpdateType, sortType);
+    this._notify(updateType, sortType);
   }
 
-  addTripPoint(UpdateType, tripPoint) {
+  addTripPoint(updateType, tripPoint) {
     this.#tripPoints.push(tripPoint);
-    this._notify(UpdateType, tripPoint);
+    this._notify(updateType, tripPoint);
   }
 
-  updateTripPoint(UpdateType, tripPoint) {
+  updateTripPoint(updateType, tripPoint) {
     const updateTripPoint = this.#findTripPoint(tripPoint.id);
     if (!updateTripPoint) {
       throw new Error(`Can't update trip event ${tripPoint.id}`);
@@ -95,13 +96,13 @@ export default class PointModel extends Observable{
     this._notify(UpdateType, tripPoint);
   }
 
-  deleteTripPoint(UpdateType, tripPoint) {
+  deleteTripPoint(updateType, tripPoint) {
     const updateTripPoint = this.#findTripPoint(tripPoint.id);
     if (!updateTripPoint) {
       throw new Error(`Can't delete trip event ${tripPoint.id}`);
     }
     this.#tripPoints = removeComponent(this.#tripPoints, updateTripPoint);
-    this._notify(UpdateType);
+    this._notify(updateType);
   }
 
   #getSortedTripPoints = (tripPoints, sortType) => tripPoints.sort(SortedTypes[sortType]);
