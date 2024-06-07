@@ -1,16 +1,15 @@
+import { UpdateType } from '../const';
 import InfoView from '../view/info-view';
 
 export default class InfoPresenter {
   #model = null;
   #container = null;
-  #infoContainer = null;
-  #filterView = null;
+  #infoView = null;
 
   constructor ({ container, model }) {
     this.#container = container;
     this.#model = model;
 
-    this.init();
     this.#model.addObserver(this.#onModelChange);
   }
 
@@ -18,9 +17,17 @@ export default class InfoPresenter {
     this.#renderSum(this.#model);
   }
 
-  #renderSum({ tripInfo }) {
-    new InfoView({ tripInfo, container: this.#infoContainer });
+  #renderSum({ info }) {
+    this.#infoView = new InfoView({ info, container: this.#container });
   }
 
-  #onModelChange = () => this.init();
+  #onModelChange = (updateType) => {
+    if (updateType !== UpdateType.MAJOR) {
+      return;
+    }
+    if (this.#infoView) {
+      this.#infoView.destroy();
+    }
+    this.init();
+  };
 }

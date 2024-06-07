@@ -254,7 +254,7 @@ export default class FormEditView extends AbstractStatefulView{
 
   #onFormSubmit = (evt) => {
     evt.preventDefault();
-    this.#submitHandler(FormEditView.parseStateToEvent(this._state));
+    this.#submitHandler(FormEditView.parseStateToPoint(this._state));
   };
 
   #onCancelForm = (evt) => {
@@ -264,7 +264,7 @@ export default class FormEditView extends AbstractStatefulView{
 
   #onDeleteForm = (evt) => {
     evt.preventDefault();
-    this.#deleteHandler(FormEditView.parseStateToEvent(this._state));
+    this.#deleteHandler(FormEditView.parseStateToPoint(this._state));
   };
 
   #onTypeChange = (evt) => {
@@ -311,7 +311,7 @@ export default class FormEditView extends AbstractStatefulView{
 
   static parsePointToState = (tripPoint) => ({
     ...tripPoint,
-    isAdding: tripPoint === null,
+    isAdding: !tripPoint.id,
     isSaving: false,
     isDeleting: false,
   });

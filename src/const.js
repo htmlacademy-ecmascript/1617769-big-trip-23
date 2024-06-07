@@ -19,12 +19,14 @@ const DESCRIPTIONS = [
   'Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.'
 ];
 
+const MINUTE_IN_MS = 60000;
+
 const BlankTripPoint = { //исправить
   id: null,
   type: DEFAULT_POINT_TYPE,
   dateFrom: new Date(),
-  dateTo: null,
-  destination: null,
+  dateTo: new Date(Date.now() + MINUTE_IN_MS),
+  destination: '',
   price: 0,
   offers: [],
   isFavorite: false,
@@ -119,6 +121,7 @@ export {
   POINT_COUNT,
   MESSAGES,
   OFFERS,
-  DESCRIPTIONS
+  DESCRIPTIONS,
+  MINUTE_IN_MS
 };
 

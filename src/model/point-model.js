@@ -56,8 +56,8 @@ export default class PointModel extends Observable{
 
   get tripInfo() {
     const tripInfo = this.#getSortedTripPoints(this.#tripPoints, this.#defaultSortType);
-    const firstPoint = tripInfo[tripInfo.length - 1];
-    const lastPoint = tripInfo[0];
+    const firstPoint = tripInfo[0];
+    const lastPoint = tripInfo[tripInfo.length - 1];
     const middlePoint = tripInfo.slice(1, -1);
     const middleDestination = middlePoint.length === 1 ? this.#getDestinationName(middlePoint[0].destination) : '...';
     return {
@@ -79,9 +79,6 @@ export default class PointModel extends Observable{
   }
 
   setCurrentFilter(updateType, filterType) {
-    if (filterType === this.#currentSort) {
-      return;
-    }
     this.#currentSort = filterType;
     this._notify(updateType, filterType);
   }

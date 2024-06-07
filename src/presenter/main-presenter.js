@@ -3,7 +3,8 @@ import DestinationPointsView from '../view/destination-points-view.js';
 import DestinationEmptyView from '../view/destination-empty-view.js';
 import SortView from '../view/sort-view';
 import PointPresenter from './point-presenter.js';
-import { UserAction, UpdateType, SortTypes } from '../const.js';
+import NewPointPresenter from './new-point-presenter.js';
+import { UserAction, UpdateType, SortTypes, FilterType } from '../const.js';
 
 export default class MainPresenter {
   #model = null;
@@ -12,11 +13,25 @@ export default class MainPresenter {
   #sortView = null;
   #destinationEmptyView = null;
   #pointPresenters = new Map();
+  #newPointPresenter = null;
+  #addButton = null;
 
-  constructor({container, model}) {
+  constructor({container, model, addButton}) {
     this.#container = container;
     this.#model = model;
     this.#model.addObserver(this.#onModelChange);
+    this.#renderTripPoints();
+    this.#addButton = addButton;
+    this.#addButton.addEventListener('click', this.#onAddButtonClick);
+
+    this.#destinationPointsView = new DestinationPointsView({ container: this.#container });
+    this.#newPointPresenter = new NewPointPresenter({
+      model,
+      container: this.#destinationPointsView.element,
+      onDataChange: this.#onDestinationPointChange,
+      onDestroy: this.#onNewPointClose
+    });
+
     this.#renderTripPoints();
   }
 
@@ -37,15 +52,12 @@ export default class MainPresenter {
   }
 
   #renderDestinationPointsView(tripPoints) {
-    if (!this.#destinationPointsView) {
-      this.#destinationPointsView = new DestinationPointsView({ container: this.#container });
-    }
     tripPoints.forEach((tripPoint) => {
       const pointPresenter = new PointPresenter({
         model: this.#model,
         container: this.#destinationPointsView.element,
         onTripEventChange: this.#onDestinationPointChange,
-        onModeChange: this.#onDestinationPointModeChange,
+        onModeChange: this.#onTripPointModeChange,
       });
       pointPresenter.init(tripPoint);
       this.#pointPresenters.set(tripPoint.id, pointPresenter);
@@ -64,6 +76,7 @@ export default class MainPresenter {
   }
 
   #clearTripPoints({resetSortType = false} = {}) {
+    this.#newPointPresenter.destroy();
     this.#pointPresenters.forEach((pointPresenter) => pointPresenter.destroy());
     this.#pointPresenters.clear();
     if (this.#sortView) {
@@ -77,12 +90,27 @@ export default class MainPresenter {
     }
   }
 
-  #onDestinationPointModeChange = () => this.#pointPresenters.forEach((presenter) => presenter.reset());
+  #setAddButtonDisabled = (disabled) => (this.#addButton.disabled = disabled);
+
+  #onTripPointModeChange = () => {
+    this.#newPointPresenter.destroy();
+    this.#pointPresenters.forEach((presenter) => presenter.reset());
+  };
 
   #onSortTypeChange = (sortType) => {
     this.#model.currentSort = sortType;
     this.#onModelChange(UpdateType.MINOR);
   };
+
+  #onAddButtonClick = () => {
+    this.#onTripPointModeChange();
+    this.#model.currentSort = SortTypes.DAY;
+    this.#model.setCurrentFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this.#newPointPresenter.init(this.#model);
+    this.#setAddButtonDisabled(true);
+  };
+
+  #onNewPointClose = () => this.#setAddButtonDisabled(false);
 
   #onDestinationPointChange = (actionType, updateType, data) => {
     switch (actionType) {
