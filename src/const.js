@@ -21,7 +21,7 @@ const DESCRIPTIONS = [
 
 const MINUTE_IN_MS = 60000;
 
-const BlankTripPoint = { //исправить
+const BLANK_TRIP_POINT = { //исправить
   id: null,
   type: DEFAULT_POINT_TYPE,
   dateFrom: new Date(),
@@ -102,7 +102,7 @@ const UpdateType = {
 };
 
 export {
-  BlankTripPoint,
+  BLANK_TRIP_POINT,
   DateFormats,
   FilterType,
   SortTypes,

@@ -1,5 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
-import { BlankTripPoint, POINT_TYPES, DateFormats, ButtonTypes, DefaultFlatpickrConfig } from '../const.js';
+import { BLANK_TRIP_POINT, POINT_TYPES, DateFormats, ButtonTypes, DefaultFlatpickrConfig } from '../const.js';
 import { displayDateTime } from './utils/date.js';
 import { firstLetterUpperCase, getIsCheckedAttr, getIsDisabledAttr, addComponent, removeComponent, getInteger } from './utils/common.js';
 import { remove } from '../framework/render.js';
@@ -125,7 +125,7 @@ const createDestinationTemplate = (destination) => {
 };
 
 const createFormEditTemplate = (tripPoint, offers, destinations) => {
-  const {type, dateFrom, dateTo, price, isAdding, isSaving, isDeleting } = tripPoint;
+  const {type, dateFrom, dateTo, basePrice, isAdding, isSaving, isDeleting } = tripPoint;
   const destinationPoint = destinations.find((destination) => destination.id === tripPoint.destination);
   const { offers: typedOffers } = offers.find((offer) => offer.type === type);
   const tripOffers = typedOffers.map((offer) => ({
@@ -140,7 +140,7 @@ const createFormEditTemplate = (tripPoint, offers, destinations) => {
         ${createPointTypesTemplate(type)}
         ${createPointDestination(type, destinationPoint, destinations)}
         ${createTimePeriodTemplate(dateFrom, dateTo)}
-        ${createPriceTemplate(price)}
+        ${createPriceTemplate(basePrice)}
         ${createButtonsTemplate(isAdding, isSaving, isDeleting)}
       </header>
       <section class="event__details">
@@ -159,7 +159,7 @@ export default class FormEditView extends AbstractStatefulView{
   #datepickerFrom = null;
   #datepickerTo = null;
 
-  constructor({tripPoint = BlankTripPoint, offers, destinations, onFormSubmit, onFormDelete, onFormCancel}) {
+  constructor({tripPoint = BLANK_TRIP_POINT, offers, destinations, onFormSubmit, onFormDelete, onFormCancel}) {
     super();
     this._setState(FormEditView.parsePointToState(tripPoint));
     this.#offers = offers;
@@ -293,17 +293,17 @@ export default class FormEditView extends AbstractStatefulView{
   };
 
   #onPriceChange = (evt) => {
-    const addedPrice = getInteger(evt.target.value);
+    const price = getInteger(evt.target.value);
     this.updateElement({
-      price: addedPrice,
+      basePrice: price,
     });
   };
 
   #onOfferClick = (evt) => {
-    const { dataset: { offerID }, checked } = evt.target;
+    const { dataset: { offerId }, checked } = evt.target;
     const offers = checked
-      ? addComponent(this._state.offers, offerID)
-      : removeComponent(this._state.offers, offerID);
+      ? addComponent(this._state.offers, offerId)
+      : removeComponent(this._state.offers, offerId);
     this.updateElement({
       offers,
     });

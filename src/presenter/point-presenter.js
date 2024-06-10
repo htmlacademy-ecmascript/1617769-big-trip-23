@@ -1,10 +1,9 @@
-import { replace } from '../framework/render';
 import FormEditView from '../view/form-edit-view';
 import DestinationPointView from '../view/destination-point-view';
-import { isEscapeKey } from '../view/utils/common';
+import { replace } from '../framework/render';
 import { Mode, UserAction, UpdateType} from '../const';
 import { isDatesEqual } from '../view/utils/date';
-
+import { isEscapeKey } from '../view/utils/common';
 
 export default class PointPresenter {
   #tripPoint = null;
@@ -135,7 +134,7 @@ export default class PointPresenter {
 
   #onEscKeydown = (evt) => {
     if (isEscapeKey(evt)) {
-      evt.preventDefault();
+      evt.stopPropagation();
       this.mode = Mode.VIEW;
     }
   };

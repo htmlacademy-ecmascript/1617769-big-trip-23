@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view';
-import { render } from '..//framework/render';
+import { render } from '../framework/render';
 
 const createTripPointListTemplate = () => `
   <ul class="trip-events__list">
@@ -7,7 +7,7 @@ const createTripPointListTemplate = () => `
 `;
 
 export default class DestinationPointsView extends AbstractView {
-  constructor ({ container}) {
+  constructor ({ container }) {
     super();
     render(this, container);
   }

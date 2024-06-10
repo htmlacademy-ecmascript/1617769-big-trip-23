@@ -9,7 +9,6 @@ export default class InfoPresenter {
   constructor ({ container, model }) {
     this.#container = container;
     this.#model = model;
-
     this.#model.addObserver(this.#onModelChange);
   }
 

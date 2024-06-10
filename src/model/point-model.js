@@ -1,11 +1,12 @@
-import Observable from '../framework/observable';
-import { getMockedPoints } from '../mock/point-mock';
-import { getMockedDestinations } from '../mock/destination';
-import { getMockedOffers } from '../mock/offer-mock';
+
 import { FilterType, SortTypes, UpdateType } from '../const'; //исправить
+import { AUTHORIZATION, BASE_URL } from '../api/trip-api-const';
 import { FilteredTypes } from '../view/utils/filter';
 import { SortedTypes } from '../view/utils/sort';
+import TripApiService from '../api/trip-api-service.ru';
+import Observable from '../framework/observable';
 import { removeComponent } from '../view/utils/common';
+
 
 export default class PointModel extends Observable{
   #tripPoints = [];
@@ -16,6 +17,7 @@ export default class PointModel extends Observable{
   #defaultSortType = SortTypes.DAY;
   #currentFilter = this.#defaultFilter;
   #currentSort = this.#defaultSortType;
+  #tripApiService = new TripApiService(BASE_URL, AUTHORIZATION);
 
   get tripPoints() {
     const filteredTripPoints = this.#getFilteredTripPoints(this.#tripPoints, this.currentFilter);
@@ -36,14 +38,6 @@ export default class PointModel extends Observable{
 
   get currentFilter() {
     return this.#currentFilter;
-  }
-
-  set currentFilter(filter) {
-    if (filter === this.#currentFilter) {
-      return;
-    }
-    this.#currentFilter = filter;
-    this._notify();
   }
 
   get currentSort() {
@@ -70,39 +64,63 @@ export default class PointModel extends Observable{
     };
   }
 
-  init() {
-    this.#destinations = getMockedDestinations();
-    this.#offers = getMockedOffers();
-    this.#tripPoints = getMockedPoints();
+  async init() {
+    try {
+      this.#destinations = await this.#tripApiService.getDestinations();
+      this.#offers = await this.#tripApiService.getOffers();
+      this.#tripPoints = (await this.#tripApiService.getPoints()).map(TripApiService.adaptToClient);
+      this._notify(UpdateType.MAJOR);
+    } catch(error) {
+      this._notify(UpdateType.ERROR);
+      this.#destinations = [];
+      this.#offers = [];
+      this.#tripPoints = [];
+    }
     this.#filters = Object.values(FilterType);
     this._notify(UpdateType.MAJOR);
   }
 
   setCurrentFilter(updateType, filterType) {
-    this.#currentSort = filterType;
+    this.#currentFilter = filterType;
     this._notify(updateType, filterType);
   }
 
-  addTripPoint(updateType, tripPoint) {
-    this.#tripPoints.push(tripPoint);
-    this._notify(updateType, tripPoint);
+  async addTripPoint(updateType, tripPoint) {
+    try {
+      const newTripPoint = await this.#tripApiService.addPoint(tripPoint);
+      this.#tripPoints.push(newTripPoint);
+      this._notify(updateType, newTripPoint);
+    } catch(error) {
+      throw new Error(error);
+    }
   }
 
-  updateTripPoint(updateType, tripPoint) {
-    const selectedPoint = this.#findTripPoint(tripPoint.id);
-    if (!selectedPoint) {
+  async updateTripPoint(updateType, tripPoint) {
+    const selectedTripPoint = this.#findTripPoint(tripPoint.id);
+    if (!selectedTripPoint) {
       throw new Error(`Can't update trip event ${tripPoint.id}`);
     }
-    Object.assign(selectedPoint, tripPoint);
-    this._notify(updateType, tripPoint);
+
+    try {
+      const updatedTripPoint = await this.#tripApiService.updatePoint(tripPoint);
+      Object.assign(selectedTripPoint, updatedTripPoint);
+      this._notify(updateType, tripPoint);
+    } catch(error) {
+      throw new Error(error);
+    }
   }
 
-  deleteTripPoint(updateType, tripPoint) {
-    const updateTripPoint = this.#findTripPoint(tripPoint.id);
-    if (!updateTripPoint) {
+  async deleteTripPoint(updateType, tripPoint) {
+    const selectedTripPoint = this.#findTripPoint(tripPoint.id);
+    if (!selectedTripPoint) {
       throw new Error(`Can't delete trip event ${tripPoint.id}`);
     }
-    this.#tripPoints = removeComponent(this.#tripPoints, updateTripPoint);
+    try {
+      await this.#tripApiService.deletePoint(tripPoint);
+    } catch(error) {
+      throw new Error(error);
+    }
+    this.#tripPoints = removeComponent(this.#tripPoints, selectedTripPoint);
     this._notify(updateType);
   }
 
@@ -111,3 +129,5 @@ export default class PointModel extends Observable{
   #getDestinationName = (id) => this.#destinations.find((destination) => destination.id === id).name;
   #findTripPoint = (id) => this.#tripPoints.find((tripPoint) => tripPoint.id === id);
 }
+
+

@@ -30,14 +30,13 @@ const createMockPoint = () => {
     dateFrom: new Date(dateStart),
     dateTo: new Date(dateEnd),
     destination: destinationID,
-    price: getRandomInt(1000),
+    basePrice: getRandomInt(1000),
     isFavorite: getRandomBoolean(),
     offers: offerIDs,
   };
 };
 
 const getMockedPoints = () => Array.from({ length: POINT_COUNT}, createMockPoint);
-
 
 export { getMockedPoints };
 

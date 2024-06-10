@@ -3,7 +3,7 @@ import { displayDate, displayDateMonth, displayDateTime, displayTime, calculateD
 import { isEmpty } from './utils/common.js';
 import { render, remove } from '../framework/render.js';
 import he from 'he';
-import { BlankTripPoint } from '../const.js';
+import { BLANK_TRIP_POINT } from '../const.js';
 
 
 const createPointScheduleTemplate = (dateFrom, dateTo) => `
@@ -72,7 +72,7 @@ export default class DestinationPointView extends AbstractView {
   #favoriteClickHandler = null;
   #favoriteButton = null;
 
-  constructor({tripPoint = BlankTripPoint, offers, destinations, container, onEditClick, onFavoriteClick}) { // поменять на snake
+  constructor({tripPoint = BLANK_TRIP_POINT, offers, destinations, container, onEditClick, onFavoriteClick}) {
     super();
     this.#tripPoint = tripPoint;
     this.#offers = offers;

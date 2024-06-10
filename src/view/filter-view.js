@@ -13,7 +13,6 @@ const createFilterItemTemplate = (value, isChecked, isDisabled) =>`
 const createFilterTemplate = (filters, currentFilter) => `
   <form class="trip-filters" action="#" method="get">
     ${filters.map((filter) => createFilterItemTemplate(filter, filter === currentFilter, false)).join('')}
-
     <button class="visually-hidden" type="submit">Accept filter</button>
   </form>
 `;

@@ -56,7 +56,7 @@ export default class MainPresenter {
       const pointPresenter = new PointPresenter({
         model: this.#model,
         container: this.#destinationPointsView.element,
-        onTripEventChange: this.#onDestinationPointChange,
+        onTripPointChange: this.#onDestinationPointChange,
         onModeChange: this.#onTripPointModeChange,
       });
       pointPresenter.init(tripPoint);
@@ -129,6 +129,7 @@ export default class MainPresenter {
   #onModelChange = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
+        this.#onTripPointModeChange();
         this.#pointPresenters.get(data.id).init(data);
         break;
       case UpdateType.MINOR:

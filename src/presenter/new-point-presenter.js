@@ -48,7 +48,7 @@ export default class NewPointPresenter {
 
   #onFormCancel = () => this.destroy();
 
-  #onEscKeydown = (evt) => {
+  #onEscKeydown = (evt) => {//исправить
     if (evt.key === 'Escape') {
       evt.stopPropagation();
       this.destroy();
