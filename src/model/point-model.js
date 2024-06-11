@@ -60,7 +60,7 @@ export default class PointModel extends Observable{
       end: this.#getDestinationName(lastPoint.destination),
       dateFrom: firstPoint.dateFrom,
       dateTo: lastPoint.dateTo,
-      cost: tripInfo.reduce((price, tripPoint) => price + tripPoint.price, 0),
+      cost: tripInfo.reduce((price, tripPoint) => price + tripPoint.basePrice, 0),
     };
   }
 

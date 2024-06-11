@@ -17,8 +17,8 @@ export default class MainPresenter {
   #addButton = null;
 
   constructor({container, model, addButton}) {
-    this.#container = container;
     this.#model = model;
+    this.#container = container;
     this.#model.addObserver(this.#onModelChange);
     this.#renderTripPoints();
     this.#addButton = addButton;
@@ -115,13 +115,13 @@ export default class MainPresenter {
   #onDestinationPointChange = (actionType, updateType, data) => {
     switch (actionType) {
       case UserAction.UPDATE:
-        this.#model.updateTripEvent(updateType, data);
+        this.#model.updateTripPoint(updateType, data);
         break;
       case UserAction.ADD:
-        this.#model.addTripEvent(updateType, data);
+        this.#model.addTripPoint(updateType, data);
         break;
       case UserAction.DELETE:
-        this.#model.deleteTripEvent(updateType, data);
+        this.#model.deleteTripPoint(updateType, data);
         break;
     }
   };

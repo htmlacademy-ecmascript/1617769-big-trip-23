@@ -3,8 +3,7 @@ import { render } from '../framework/render';
 
 const createTripPointListTemplate = () => `
   <ul class="trip-events__list">
-  </ul>
-`;
+  </ul>`;
 
 export default class DestinationPointsView extends AbstractView {
   constructor ({ container }) {
