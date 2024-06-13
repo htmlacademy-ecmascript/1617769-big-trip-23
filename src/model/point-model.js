@@ -1,27 +1,23 @@
-
-import { FilterType, SortTypes, UpdateType } from '../const'; //исправить
-import { AUTHORIZATION, BASE_URL } from '../api/trip-api-const';
-import { FilteredTypes } from '../view/utils/filter';
-import { SortedTypes } from '../view/utils/sort';
-import TripApiService from '../api/trip-api-service.ru';
+import { Filters, DEFAULT_FILTER, DEFAULT_SORT_TYPE, UpdateType } from '../const/common';
+import { BASE_URL, AUTHORIZATION } from '../const/api';
+import { FilterFunctions } from '../utils/filter';
+import { SortFunctions } from '../utils/sort';
+import TripApiService from '../trip-api-service';
 import Observable from '../framework/observable';
-import { removeComponent } from '../view/utils/common';
+import { removeItem } from '../utils/common';
 
-
-export default class PointModel extends Observable{
-  #tripPoints = [];
+export default class PointModel extends Observable {
   #destinations = [];
   #offers = [];
+  #trip = [];
   #filters = [];
-  #defaultFilter = FilterType.EVERYTHING;
-  #defaultSortType = SortTypes.DAY;
-  #currentFilter = this.#defaultFilter;
-  #currentSort = this.#defaultSortType;
+  #currentFilter = DEFAULT_FILTER;
+  #currentSort = DEFAULT_SORT_TYPE;
   #tripApiService = new TripApiService(BASE_URL, AUTHORIZATION);
 
-  get tripPoints() {
-    const filteredTripPoints = this.#getFilteredTripPoints(this.#tripPoints, this.currentFilter);
-    return this.#getSortedTripPoints(filteredTripPoints, this.currentSort);
+  get trip() {
+    const filteredTrip = this.#getFilteredTrip(this.#trip, this.currentFilter);
+    return this.#getSortedTrip(filteredTrip, this.currentSort);
   }
 
   get offers() {
@@ -48,19 +44,19 @@ export default class PointModel extends Observable{
     this.#currentSort = sortType;
   }
 
-  get tripInfo() {
-    const tripInfo = this.#getSortedTripPoints(this.#tripPoints, this.#defaultSortType);
-    const firstPoint = tripInfo[0];
-    const lastPoint = tripInfo[tripInfo.length - 1];
-    const middlePoint = tripInfo.slice(1, -1);
-    const middleDestination = middlePoint.length === 1 ? this.#getDestinationName(middlePoint[0].destination) : '...';
+  get info() {
+    const trip = this.#getSortedTrip(this.#trip, DEFAULT_SORT_TYPE);
+    const first = trip[0];
+    const last = trip[trip.length - 1];
+    const middle = trip.slice(1, -1);
+    const middleDestination = middle.length === 1 ? this.#getDestinationName(middle[0].destination) : '...';
     return {
-      start: this.#getDestinationName(firstPoint.destination),
+      start: this.#getDestinationName(first.destination),
       middle: middleDestination,
-      end: this.#getDestinationName(lastPoint.destination),
-      dateFrom: firstPoint.dateFrom,
-      dateTo: lastPoint.dateTo,
-      cost: tripInfo.reduce((price, tripPoint) => price + tripPoint.basePrice, 0),
+      end:  this.#getDestinationName(last.destination),
+      dateFrom: first.dateFrom,
+      dateTo: last.dateTo,
+      cost: trip.reduce((price, point) => price + point.basePrice, 0),
     };
   }
 
@@ -68,15 +64,16 @@ export default class PointModel extends Observable{
     try {
       this.#destinations = await this.#tripApiService.getDestinations();
       this.#offers = await this.#tripApiService.getOffers();
-      this.#tripPoints = (await this.#tripApiService.getPoints()).map(TripApiService.adaptToClient);
+      this.#trip = (await this.#tripApiService.getPoints()).map(TripApiService.adaptToClient);
       this._notify(UpdateType.MAJOR);
     } catch(error) {
       this._notify(UpdateType.ERROR);
       this.#destinations = [];
       this.#offers = [];
-      this.#tripPoints = [];
+      this.#trip = [];
     }
-    this.#filters = Object.values(FilterType);
+
+    this.#filters = Object.values(Filters);
     this._notify(UpdateType.MAJOR);
   }
 
@@ -85,49 +82,48 @@ export default class PointModel extends Observable{
     this._notify(updateType, filterType);
   }
 
-  async addTripPoint(updateType, tripPoint) {
+  async addPoint(updateType, point) {
     try {
-      const newTripPoint = await this.#tripApiService.addPoint(tripPoint);
-      this.#tripPoints.push(newTripPoint);
-      this._notify(updateType, newTripPoint);
+      const newPoint = await this.#tripApiService.addPoint(point);
+      this.#trip.push(newPoint);
+      this._notify(updateType, newPoint);
     } catch(error) {
       throw new Error(error);
     }
   }
 
-  async updateTripPoint(updateType, tripPoint) {
-    const selectedTripPoint = this.#findTripPoint(tripPoint.id);
-    if (!selectedTripPoint) {
-      throw new Error(`Can't update trip event ${tripPoint.id}`);
+  async updatePoint(updateType, point) {
+    const selectedPoint = this.#findPoint(point.id);
+    if (!selectedPoint) {
+      throw new Error(`Can't update trip event ${point.id}`);
     }
 
     try {
-      const updatedTripPoint = await this.#tripApiService.updatePoint(tripPoint);
-      Object.assign(selectedTripPoint, updatedTripPoint);
-      this._notify(updateType, tripPoint);
+      const updatedPoint = await this.#tripApiService.updatePoint(point);
+      Object.assign(selectedPoint, updatedPoint);
+      this._notify(updateType, point);
     } catch(error) {
       throw new Error(error);
     }
   }
 
-  async deleteTripPoint(updateType, tripPoint) {
-    const selectedTripPoint = this.#findTripPoint(tripPoint.id);
-    if (!selectedTripPoint) {
-      throw new Error(`Can't delete trip event ${tripPoint.id}`);
+  async deletePoint(updateType, point) {
+    const selectedPoint = this.#findPoint(point.id);
+    if (!selectedPoint) {
+      throw new Error(`Can't delete trip event ${point.id}`);
     }
     try {
-      await this.#tripApiService.deletePoint(tripPoint);
+      await this.#tripApiService.deletePoint(point);
     } catch(error) {
       throw new Error(error);
     }
-    this.#tripPoints = removeComponent(this.#tripPoints, selectedTripPoint);
+
+    this.#trip = removeItem(this.#trip, selectedPoint);
     this._notify(updateType);
   }
 
-  #getSortedTripPoints = (tripPoints, sortType) => tripPoints.sort(SortedTypes[sortType]);
-  #getFilteredTripPoints = (tripPoints, filter) => tripPoints.filter(FilteredTypes[filter]);
+  #getSortedTrip = (trip, sortType) => trip.sort(SortFunctions[sortType]);
+  #getFilteredTrip = (trip, filter) => trip.filter(FilterFunctions[filter]);
   #getDestinationName = (id) => this.#destinations.find((destination) => destination.id === id).name;
-  #findTripPoint = (id) => this.#tripPoints.find((tripPoint) => tripPoint.id === id);
+  #findPoint = (id) => this.#trip.find((point) => point.id === id);
 }
-
-

@@ -1,23 +1,25 @@
-import AbstractView from '../framework/view/abstract-view.js';
-import { firstLetterUpperCase, getIsCheckedAttr, getIsDisabledAttr } from './utils/common.js';
+import AbstractView from '../framework/view/abstract-view';
+import { firstLetterUpperCase, getIsCheckedAttr, getIsDisabledAttr } from '../utils/common';
 import { render, remove } from '../framework/render';
+import { Prefix } from '../const/common';
 
-const createFilterItemTemplate = (value, isChecked, isDisabled) =>`
+
+const getFilterItemTemplate = (value, isChecked, isDisabled) => `
   <div class="trip-filters__filter">
     <input id="filter-${value}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter"
-      value="${value}" ${getIsCheckedAttr(isChecked)} ${getIsDisabledAttr(isDisabled)}/>
+      value="${value}" ${getIsCheckedAttr(isChecked)} ${getIsDisabledAttr(isDisabled)}>
     <label class="trip-filters__filter-label" for="filter-${value}">${firstLetterUpperCase(value)}</label>
-</div>
+  </div>
 `;
 
-const createFilterTemplate = (filters, currentFilter) => `
+const getFiltersTemplate = (filters, currentFilter) => `
   <form class="trip-filters" action="#" method="get">
-    ${filters.map((filter) => createFilterItemTemplate(filter, filter === currentFilter, false)).join('')}
+    ${filters.map((filter) => getFilterItemTemplate(filter, filter === currentFilter, false)).join('')}
     <button class="visually-hidden" type="submit">Accept filter</button>
   </form>
 `;
 
-export default class FilterView extends AbstractView{
+export default class FilterView extends AbstractView {
   #filters = [];
   #currentFilter = '';
   #filterChangeHandler = null;
@@ -32,7 +34,11 @@ export default class FilterView extends AbstractView{
   }
 
   get template() {
-    return createFilterTemplate(this.#filters, this.#currentFilter);
+    return getFiltersTemplate(this.#filters, this.#currentFilter);
+  }
+
+  destroy() {
+    remove(this);
   }
 
   removeElement() {
@@ -42,10 +48,6 @@ export default class FilterView extends AbstractView{
 
   #onFilterChange = (evt) => {
     evt.preventDefault();
-    this.#filterChangeHandler(evt.target.value.replace('filter-', ''));
+    this.#filterChangeHandler(evt.target.value.replace(Prefix.FILTER, ''));
   };
-
-  destroy() {
-    remove(this);
-  }
 }

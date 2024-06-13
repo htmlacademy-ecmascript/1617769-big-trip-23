@@ -1,4 +1,4 @@
-import { UpdateType } from '../const';
+import { UpdateType } from '../const/common';
 import InfoView from '../view/info-view';
 
 export default class InfoPresenter {
@@ -9,14 +9,15 @@ export default class InfoPresenter {
   constructor ({ container, model }) {
     this.#container = container;
     this.#model = model;
+
     this.#model.addObserver(this.#onModelChange);
   }
 
   init() {
-    this.#renderSum(this.#model);
+    this.#renderSummary(this.#model);
   }
 
-  #renderSum({ info }) {
+  #renderSummary({ info }) {
     this.#infoView = new InfoView({ info, container: this.#container });
   }
 

@@ -1,19 +1,20 @@
-import AbstractView from '../framework/view/abstract-view.js';
-import { render, remove, RenderPosition } from '../framework/render';
-import { firstLetterUpperCase, getIsCheckedAttr, getIsDisabledAttr } from './utils/common';
-import { SortInputTypes } from '../const.js';
+import AbstractView from '../framework/view/abstract-view';
+import { remove, render, RenderPosition } from '../framework/render';
+import { firstLetterUpperCase, getIsCheckedAttr, getIsDisabledAttr } from '../utils/common';
+import { SortInputTypes, Prefix } from '../const/common';
 
-const createSortItemTemplate = (type, isChecked, isDisabled) => `
-    <div class="trip-sort__item  trip-sort__item--${type}">
-      <input id="sort-${type}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort"
-        value="sort-${type}" ${getIsCheckedAttr(isChecked)} ${getIsDisabledAttr(isDisabled)}>
-      <label class="trip-sort__btn" for="sort-${type}">${firstLetterUpperCase(type)}</label>
-    </div>
+
+const getSortItemTemplate = (type, isChecked, isDisabled) => `
+  <div class="trip-sort__item  trip-sort__item--${type}">
+    <input id="sort-${type}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort"
+      value="sort-${type}" ${getIsCheckedAttr(isChecked)} ${getIsDisabledAttr(isDisabled)}>
+    <label class="trip-sort__btn" for="sort-${type}">${firstLetterUpperCase(type)}</label>
+  </div>
 `;
 
-const createSortTemplate = (currentSortType) => `
+const getSortingTemplate = (currentSortType) => `
   <form class="trip-events__trip-sort  trip-sort" action="#" method="get">
-    ${SortInputTypes.map(({ type, sortable }) => createSortItemTemplate(type, type === currentSortType, !sortable)).join('')}
+    ${SortInputTypes.map(({ type, sortable }) => getSortItemTemplate(type, type === currentSortType, !sortable)).join('')}
   </form>
 `;
 
@@ -31,7 +32,11 @@ export default class SortView extends AbstractView {
   }
 
   get template() {
-    return createSortTemplate(this.#currentSort);
+    return getSortingTemplate(this.#currentSort);
+  }
+
+  destroy() {
+    remove(this);
   }
 
   removeElement() {
@@ -41,10 +46,6 @@ export default class SortView extends AbstractView {
 
   #onSortTypeChange = (evt) => {
     evt.preventDefault();
-    this.#sortTypeChangeHandler(evt.target.value.replace('sort-', ''));
+    this.#sortTypeChangeHandler(evt.target.value.replace(Prefix.SORT, ''));
   };
-
-  destroy() {
-    remove(this);
-  }
 }

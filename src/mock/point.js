@@ -4,10 +4,10 @@ import {
   getRandomInt,
   getRandomBoolean,
   getDateWithRandomTime
-} from './mock-utils';
+} from './utils';
 import { POINT_COUNT, POINT_TYPES, SELECTED_OFFERS_LIMIT } from '../const';
 import { getRandomDestination } from './destination';
-import { getMockedOffers } from './offer-mock';
+import { getMockedOffers } from './offers';
 
 const pointID = getID();
 

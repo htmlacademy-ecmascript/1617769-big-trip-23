@@ -1,14 +1,13 @@
 import FilterView from '../view/filter-view';
 import { replace } from '../framework/render';
-import { UpdateType } from '../const';
-
+import { UpdateType } from '../const/common';
 
 export default class FilterPresenter {
   #model = null;
   #container = null;
   #filterView = null;
 
-  constructor ({container, model}) {
+  constructor ({ container, model }) {
     this.#container = container;
     this.#model = model;
     this.init();
@@ -43,4 +42,3 @@ export default class FilterPresenter {
 
   #onModelChange = () => this.init();
 }
-
