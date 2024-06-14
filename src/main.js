@@ -1,36 +1,21 @@
-import HeaderPresenter from './presenter/header-presenter';
-import MainPresenter from './presenter/main-presenter';
+import TripPresenter from './presenter/trip-presenter';
+import FilterPresenter from './presenter/filter-presenter';
 import PointModel from './model/point-model';
+import InfoPresenter from './presenter/info-presenter';
 
-
-const run = () => {
-
-  const pointsElement = document.querySelector('.trip-events');
+const run = async () => {
+  const eventsElement = document.querySelector('.trip-events');
   const filtersElement = document.querySelector('.trip-controls__filters');
-  const headerMainElement = document.querySelector('.trip-main');
+  const mainElement = document.querySelector('.trip-main');
+  const addButtonElement = document.querySelector('.trip-main__event-add-btn');
 
   const pointModel = new PointModel();
-  pointModel.init();
 
-  const headerPresenter = new HeaderPresenter(
-    {
-      container: {
-        filter: filtersElement,
-        info: headerMainElement
-      },
-      model: pointModel
-    }
-  );
+  new InfoPresenter({ container: mainElement, model: pointModel });
+  new FilterPresenter({ container: filtersElement, model: pointModel });
+  new TripPresenter({ container: eventsElement, model: pointModel, addButton: addButtonElement });
 
-  const mainPresenter = new MainPresenter(
-    {
-      container: pointsElement,
-      model: pointModel
-    }
-  );
-
-  headerPresenter.init();
-  mainPresenter.init();
+  await pointModel.init();
 };
 
 run();

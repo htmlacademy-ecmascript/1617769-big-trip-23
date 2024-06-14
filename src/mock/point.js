@@ -4,10 +4,10 @@ import {
   getRandomInt,
   getRandomBoolean,
   getDateWithRandomTime
-} from './mock-utils';
+} from './utils';
 import { POINT_COUNT, POINT_TYPES, SELECTED_OFFERS_LIMIT } from '../const';
 import { getRandomDestination } from './destination';
-import { getMockedOffers } from './offer-mock';
+import { getMockedOffers } from './offers';
 
 const pointID = getID();
 
@@ -30,14 +30,13 @@ const createMockPoint = () => {
     dateFrom: new Date(dateStart),
     dateTo: new Date(dateEnd),
     destination: destinationID,
-    price: getRandomInt(1000),
+    basePrice: getRandomInt(1000),
     isFavorite: getRandomBoolean(),
     offers: offerIDs,
   };
 };
 
 const getMockedPoints = () => Array.from({ length: POINT_COUNT}, createMockPoint);
-
 
 export { getMockedPoints };
 
