@@ -37,14 +37,12 @@ export default class FilterView extends AbstractView {
     return getFiltersTemplate(this.#filters, this.#currentFilter);
   }
 
-  destroy() {
-    remove(this);
-  }
+  destroy = () => remove(this);
 
-  removeElement() {
+  removeElement = () => {
     this.element.removeEventListener('change', this.#onFilterChange);
     super.removeElement();
-  }
+  };
 
   #onFilterChange = (evt) => {
     evt.preventDefault();
