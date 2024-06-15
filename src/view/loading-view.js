@@ -16,7 +16,6 @@ export default class LoadingView extends AbstractView {
     return getLoadingTemplate(this.#message);
   }
 
-  destroy() {
-    remove(this);
-  }
+  destroy = () => remove(this);
 }
+

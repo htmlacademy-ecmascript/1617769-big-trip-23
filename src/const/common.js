@@ -87,6 +87,7 @@ const UpdateType = {
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
   ERROR: 'ERROR',
+  INIT: 'INIT',
 };
 
 const FormMode = {
