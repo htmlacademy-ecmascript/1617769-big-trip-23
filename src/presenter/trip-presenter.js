@@ -46,16 +46,6 @@ export default class TripPresenter {
     return getSorted(filteredTrip, this.#model.currentSort);
   }
 
-  #renderLoadingView = (message) => {
-    this.#loadingView = new LoadingView ({ message, container: this.#container });
-  };
-
-  #clearLoadingView = () => {
-    if (this.#loadingView) {
-      this.#loadingView.destroy();
-    }
-  };
-
   #renderSortView = () => {
     this.#sortView = new SortView({
       currentSort: this.#model.currentSort,
@@ -77,26 +67,36 @@ export default class TripPresenter {
     });
   };
 
-  #getLoading = () => {
-    if (this.#isLoading) {
-      return Messages.LOADING;
-    }
+  #renderLoadingView = () => {
+    const getMessage = () => {
+      switch (true) {
+        case this.#isLoading:
+          return Messages.LOADING;
+        case this.#isError:
+          return Messages.ERROR;
+        case isEmpty(this.trip):
+          return TripEmptyMessages[this.#model.currentFilter];
+        default:
+          return '';
+      }
+    };
 
-    if (this.#isError) {
-      return Messages.ERROR;
+    const message = getMessage();
+    if (message) {
+      this.#loadingView = new LoadingView({ message, container: this.#container });
     }
+    return !!message;
+  };
 
-    if (isEmpty(this.trip)) {
-      return TripEmptyMessages[this.#model.currentFilter];
+
+  #clearLoadingView = () => {
+    if (this.#loadingView) {
+      this.#loadingView.destroy();
     }
-    return '';
   };
 
   #renderTrip = () => {
-    const message = this.#getLoading();
-    if (message) {
-      this.#setAddButtonDisabled(this.#isLoading);
-      this.#renderLoadingView(message);
+    if (this.#renderLoadingView()) {
       return;
     }
 
@@ -137,7 +137,10 @@ export default class TripPresenter {
     this.#setAddButtonDisabled(true);
   };
 
-  #onNewPointClose = () => this.#setAddButtonDisabled(false);
+  #onNewPointClose = () => {
+    this.#setAddButtonDisabled(false);
+    this.#renderLoadingView();
+  };
 
   #onPointChange = async (actionType, updateType, data) => {
     this.#uiBlocker.block();

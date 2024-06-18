@@ -8,7 +8,8 @@ import {
   getIsDisabledAttr,
   getInteger,
   addItem,
-  removeItem } from '../utils/common';
+  removeItem,
+  isEmpty } from '../utils/common';
 import { getDestination, getTypedOffers } from '../model/utils/common';
 import he from 'he';
 import flatpickr from 'flatpickr';
@@ -120,7 +121,7 @@ const getDestinationTemplate = (destination) => {
     return '';
   }
   const { description, pictures } = destination;
-  return !description || !pictures.length ? '' : `
+  return !description && isEmpty(pictures) ? '' : `
     <section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
       <p class="event__destination-description">${description}</p>
@@ -139,19 +140,21 @@ const getEditTemplate = (point, offers, destinations) => {
   }));
 
   return `
-  <form class="event event--edit" action="#" method="post">
-    <header class="event__header">
-      ${getTypesTemplate(type)}
-      ${getPointDestination(type, destination, destinations)}
-      ${getTimePeriodTemplate(dateFrom, dateTo)}
-      ${getPriceTemplate(basePrice)}
-      ${getButtonsTemplate(isAdding, isSaving, isDeleting)}
-    </header>
-    <section class="event__details">
-      ${getOffersTemplate(tripOffers)}
-      ${getDestinationTemplate(destination)}
-    </section>
-  </form>`;
+  <li class="trip-events__item">
+    <form class="event event--edit" action="#" method="post">
+      <header class="event__header">
+        ${getTypesTemplate(type)}
+        ${getPointDestination(type, destination, destinations)}
+        ${getTimePeriodTemplate(dateFrom, dateTo)}
+        ${getPriceTemplate(basePrice)}
+        ${getButtonsTemplate(isAdding, isSaving, isDeleting)}
+      </header>
+      <section class="event__details">
+        ${getOffersTemplate(tripOffers)}
+        ${getDestinationTemplate(destination)}
+      </section>
+    </form>
+  </li>`;
 };
 
 export default class EditView extends AbstractStatefulView {
@@ -263,10 +266,7 @@ export default class EditView extends AbstractStatefulView {
     if (this._state.type === type) {
       return;
     }
-    this.updateElement({
-      type,
-      offers: [],
-    });
+    this.updateElement({ type, offers: [] });
   };
 
   #onDestinationChange = (evt) => {
@@ -274,9 +274,7 @@ export default class EditView extends AbstractStatefulView {
     if (!destination || this._state.destination === destination.id) {
       return;
     }
-    this.updateElement({
-      destination: destination.id,
-    });
+    this.updateElement({ destination: destination.id });
   };
 
   #onPriceInput = (evt) => {
@@ -285,21 +283,15 @@ export default class EditView extends AbstractStatefulView {
 
   #onPriceChange = (evt) => {
     const price = getInteger(evt.target.value);
-    this.updateElement({
-      basePrice: price,
-    });
+    this.updateElement({ basePrice: price });
   };
 
   #onDateFromChange = ([date]) => {
-    this.updateElement({
-      dateFrom: date,
-    });
+    this.updateElement({ dateFrom: date });
   };
 
   #onDateToChange = ([date]) => {
-    this.updateElement({
-      dateTo: date,
-    });
+    this.updateElement({ dateTo: date });
   };
 
   #onOfferClick = (evt) => {
@@ -308,9 +300,7 @@ export default class EditView extends AbstractStatefulView {
       ? addItem(this._state.offers, offerId)
       : removeItem(this._state.offers, offerId);
 
-    this.updateElement({
-      offers,
-    });
+    this.updateElement({ offers });
   };
 
   static parsePointToState = (point) => ({

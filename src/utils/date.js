@@ -7,16 +7,17 @@ dayjs.extend(duration);
 const getDateDiff = ({ dateFrom, dateTo }) => dayjs(dateTo).diff(dateFrom);
 
 const displayDuration = (dateFrom, dateTo) => {
-  const dateDelta = dayjs.duration(getDateDiff({ dateFrom, dateTo }));
-  if (dateDelta.days()) {
-    return dateDelta.format(DateFormats.DAY);
+  const dateDiff = dayjs.duration(getDateDiff({ dateFrom, dateTo }));
+
+  if (dateDiff.days()) {
+    const diffInDays = dayjs(dateTo).diff(dateFrom, 'day').toString().padStart(2, '0');
+    return `${diffInDays}D ${dateDiff.format(DateFormats.HOUR)}`;
+  }
+  if (dateDiff.hours()) {
+    return dateDiff.format(DateFormats.HOUR);
   }
 
-  if (dateDelta.hours()) {
-    return dateDelta.format(DateFormats.HOUR);
-  }
-
-  return dateDelta.format(DateFormats.MINUTE);
+  return dateDiff.format(DateFormats.MINUTE);
 };
 
 const isDatesEqual = (dateA, dateB) => ((dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D'));
