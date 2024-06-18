@@ -2,7 +2,14 @@ import { BLANK_POINT, POINT_TYPES, DateFormats, ButtonTypes, DefaultFlatpickrCon
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { displayDateTime } from '../utils/date';
 import { remove } from '../framework/render';
-import { firstLetterUpperCase, getIsCheckedAttr, getIsDisabledAttr, getInteger, addItem, removeItem } from '../utils/common';
+import {
+  firstLetterUpperCase,
+  getIsCheckedAttr,
+  getIsDisabledAttr,
+  getInteger,
+  addItem,
+  removeItem } from '../utils/common';
+import { getDestination, getTypedOffers } from '../model/utils/common';
 import he from 'he';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
@@ -31,7 +38,7 @@ const getTypesTemplate = (type) => `
   </div>
 `;
 
-const getDestination = (type, { name: destinationName = '' } = {}, destinations) => `
+const getPointDestination = (type, { name: destinationName = '' } = {}, destinations) => `
   <div class="event__field-group  event__field-group--destination">
     <label class="event__label  event__type-output" for="event-destination-1">
       ${type}
@@ -123,8 +130,8 @@ const getDestinationTemplate = (destination) => {
 
 const getEditTemplate = (point, offers, destinations) => {
   const { type, dateFrom, dateTo, basePrice, isAdding, isSaving, isDeleting } = point;
-  const destination = destinations.find((dest) => dest.id === point.destination);
-  const { offers: typedOffers } = offers.find((offer) => offer.type === type);
+  const destination = getDestination(destinations, point.destination);
+  const { offers: typedOffers } = getTypedOffers(offers, type);
   const tripOffers = typedOffers.map((offer) => ({
     ...offer,
     type: type,
@@ -135,7 +142,7 @@ const getEditTemplate = (point, offers, destinations) => {
   <form class="event event--edit" action="#" method="post">
     <header class="event__header">
       ${getTypesTemplate(type)}
-      ${getDestination(type, destination, destinations)}
+      ${getPointDestination(type, destination, destinations)}
       ${getTimePeriodTemplate(dateFrom, dateTo)}
       ${getPriceTemplate(basePrice)}
       ${getButtonsTemplate(isAdding, isSaving, isDeleting)}

@@ -1,6 +1,7 @@
 import { render, RenderPosition } from '../framework/render.js';
 import EditView from '../view/edit-view.js';
 import { UserAction, UpdateType } from '../const/common.js';
+import { isEscKeydown } from '../utils/common.js';
 
 export default class NewPointPresenter {
   #container = null;
@@ -59,7 +60,7 @@ export default class NewPointPresenter {
   #onFormCancel = () => this.destroy();
 
   #onEscKeydown = (evt) => {
-    if (evt.key === 'Escape') {
+    if (isEscKeydown(evt)) {
       evt.stopPropagation();
       this.destroy();
     }

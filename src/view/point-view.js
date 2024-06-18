@@ -1,6 +1,7 @@
 import AbstractView from '../framework/view/abstract-view';
 import { displayDate, displayDateMonth, displayTime, displayDateTime, displayDuration } from '../utils/date';
 import { isEmpty } from '../utils/common';
+import { getDestination, getTypedOffers } from '../model/utils/common';
 import { render, remove } from '../framework/render';
 import he from 'he';
 import { BLANK_POINT } from '../const/common';
@@ -28,8 +29,8 @@ const getOffersTemplate = (offers) => isEmpty(offers) ? '' :
 const getPointTemplate = (point, offers, destinations) => {
   const {type, dateFrom, dateTo, basePrice, isFavorite} = point;
   const favoriteClassName = isFavorite ? 'event__favorite-btn--active' : '';
-  const {name: destinationName} = destinations.find((destination) => destination.id === point.destination);
-  const {offers: typedOffers} = offers.find((offer) => offer.type === type);
+  const {name: destinationName} = getDestination(destinations, point.destination);
+  const {offers: typedOffers} = getTypedOffers(offers, type);
   const selectedOffers = typedOffers.filter((offer) => point.offers.includes(offer.id));
 
   return `

@@ -111,7 +111,6 @@ export default class TripPresenter {
     if (this.#sortView) {
       this.#sortView.destroy();
     }
-    this.#clearLoadingView();
     if (resetSortType) {
       this.#model.currentSort = DEFAULT_SORT_TYPE;
     }
@@ -131,10 +130,10 @@ export default class TripPresenter {
 
   #onAddButtonClick = () => {
     this.#onPointModeChange();
-    this.#clearTrip();
     this.#model.currentSort = DEFAULT_SORT_TYPE;
     this.#model.setCurrentFilter(UpdateType.MAJOR, DEFAULT_FILTER);
     this.#newPointPresenter.init(this.#model);
+    this.#clearLoadingView();
     this.#setAddButtonDisabled(true);
   };
 
@@ -172,6 +171,7 @@ export default class TripPresenter {
   };
 
   #onModelChange = (updateType, data) => {
+    this.#clearLoadingView();
     switch (updateType) {
       case UpdateType.PATCH:
         this.#pointPresenters.get(data.id).init(data);

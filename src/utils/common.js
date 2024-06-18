@@ -3,6 +3,7 @@ const firstLetterUpperCase = (word) => {
   return `${firstLetter.toUpperCase()}${rest.join('')}`;
 };
 
+const isEscKeydown = (evt) => evt.key === 'Escape';
 const isEmpty = (list) => list.length === 0;
 const getIsCheckedAttr = (isChecked) => isChecked ? 'checked' : '';
 const getIsDisabledAttr = (isDisabled) => isDisabled ? 'disabled' : '';
@@ -17,6 +18,7 @@ const getInteger = (str) => {
 
 export {
   firstLetterUpperCase,
+  isEscKeydown,
   isEmpty,
   getIsCheckedAttr,
   getIsDisabledAttr,

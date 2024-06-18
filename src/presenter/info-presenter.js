@@ -1,4 +1,3 @@
-import { UpdateType } from '../const/common';
 import InfoView from '../view/info-view';
 
 export default class InfoPresenter {
@@ -21,10 +20,7 @@ export default class InfoPresenter {
     this.#infoView = new InfoView({ info, container: this.#container });
   }
 
-  #onModelChange = (updateType) => {
-    if (updateType !== UpdateType.MAJOR) {
-      return;
-    }
+  #onModelChange = () => {
     if (this.#infoView) {
       this.#infoView.destroy();
     }

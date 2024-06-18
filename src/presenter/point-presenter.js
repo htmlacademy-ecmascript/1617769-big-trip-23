@@ -3,6 +3,8 @@ import PointView from '../view/point-view';
 import { replace } from '../framework/render';
 import { UserAction, UpdateType, FormMode } from '../const/common';
 import { isDatesEqual } from '../utils/date';
+import { isEscKeydown } from '../utils/common';
+
 
 export default class PointPresenter {
   #point = null;
@@ -165,7 +167,7 @@ export default class PointPresenter {
   );
 
   #onEscKeydown = (evt) => {
-    if (evt.key === 'Escape') {
+    if (isEscKeydown(evt)) {
       evt.stopPropagation();
       this.mode = FormMode.VIEW;
     }

@@ -3,7 +3,12 @@ import { render, remove, RenderPosition } from '../framework/render';
 import { displayDateTime } from '../utils/date';
 import { DateFormats } from '../const/common';
 
-const getTripInfoTemplate = ({ start, middle, end, dateFrom, dateTo, cost }) => `
+const getTripInfoTemplate = ({ start, middle, end, dateFrom, dateTo, cost }) => {
+  if (!start) {
+    return '<section class="trip-main__trip-info  trip-info"></section>';
+  }
+
+  return `
     <section class="trip-main__trip-info  trip-info">
       <div class="trip-info__main">
         <h1 class="trip-info__title">${start} &mdash; ${middle} &mdash; ${end}</h1>
@@ -15,8 +20,8 @@ const getTripInfoTemplate = ({ start, middle, end, dateFrom, dateTo, cost }) => 
       <p class="trip-info__cost">
         Total: &euro;&nbsp;<span class="trip-info__cost-value">${cost}</span>
       </p>
-    </section>
-  `;
+    </section>`;
+};
 
 export default class InfoView extends AbstractView {
   #info = null;
