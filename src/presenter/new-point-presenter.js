@@ -42,21 +42,10 @@ export default class NewPointPresenter {
     this.#pointDestroyHandler();
   };
 
-  setSaving = () => this.#editView.updateElement({ isSaving: true });
-
-  setAborting = () => {
-    const resetFormState = () => {
-      this.#editView.updateElement({
-        isSaving: false,
-        isDeleting: false,
-      });
-    };
-
-    this.#editView.shake(resetFormState);
-  };
+  setSaving = (isSaving = true) => this.#editView.updateElement({ isSaving });
+  setAborting = () => this.#editView.shake(this.setSaving(false));
 
   #onFormSubmit = (point) => this.#pointChangeHandler(UserAction.ADD, UpdateType.MAJOR, point);
-
   #onFormCancel = () => this.destroy();
 
   #onEscKeydown = (evt) => {

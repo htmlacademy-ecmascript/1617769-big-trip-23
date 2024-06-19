@@ -29,6 +29,7 @@ export default class TripPresenter {
     this.#model.addObserver(this.#onModelChange);
     this.#addButton = addButton;
     this.#addButton.addEventListener('click', this.#onAddButtonClick);
+    this.#setAddButtonDisabled(true);
 
     this.#tripView = new TripView({ container: this.#container });
     this.#newPointPresenter = new NewPointPresenter({
@@ -85,7 +86,7 @@ export default class TripPresenter {
     if (message) {
       this.#loadingView = new LoadingView({ message, container: this.#container });
     }
-    return !!message;
+    return Boolean(message);
   };
 
 
@@ -196,6 +197,7 @@ export default class TripPresenter {
         break;
       case UpdateType.ERROR:
         this.#isError = true;
+        this.#isLoading = false;
         this.#renderTrip();
         break;
     }

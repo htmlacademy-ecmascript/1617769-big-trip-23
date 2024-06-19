@@ -10,7 +10,7 @@ import {
   addItem,
   removeItem,
   isEmpty } from '../utils/common';
-import { getDestination, getTypedOffers } from '../model/utils/common';
+import { getDestination, getPointOffers } from '../model/utils/common';
 import he from 'he';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
@@ -71,8 +71,8 @@ const getPriceTemplate = (price) => `
   </div>
 `;
 
-const getRollupButtonTemplate = (isAdding, isDisabled) => !isAdding
-  ? `<button class="event__rollup-btn" type="button" ${getIsDisabledAttr(isDisabled)}>
+const getRollupButtonTemplate = (isAdding) => !isAdding
+  ? `<button class="event__rollup-btn" type="button"}>
       <span class="visually-hidden">Open event</span>
     </button>`
   : '';
@@ -85,13 +85,13 @@ const getButtonsTemplate = (isAdding, isSaving, isDeleting) => {
   return `
     <button class="event__save-btn  btn  btn--blue" type="submit" ${getIsDisabledAttr(isSaving)}>${saveCaption}</button>
     <button class="event__reset-btn" type="reset" ${getIsDisabledAttr(isDeleting)}>${resetCaption}</button>
-    ${getRollupButtonTemplate(isAdding, isSaving || isDeleting)}`;
+    ${getRollupButtonTemplate(isAdding)}`;
 };
 
 const getOfferItemTemplate = ({id, title, price, type, isSelected}) => `
   <div class="event__offer-selector">
-    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${type}-${id}" type="checkbox" name="event-offer-${type}"
-      data-offer-id=${id} ${getIsCheckedAttr(isSelected)}>
+    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${type}-${id}" type="checkbox"
+      name="event-offer-${type}" data-offer-id=${id} ${getIsCheckedAttr(isSelected)}>
     <label class="event__offer-label" for="event-offer-${type}-${id}">
       <span class="event__offer-title">${title}</span>
       &plus;&euro;&nbsp;
@@ -132,8 +132,8 @@ const getDestinationTemplate = (destination) => {
 const getEditTemplate = (point, offers, destinations) => {
   const { type, dateFrom, dateTo, basePrice, isAdding, isSaving, isDeleting } = point;
   const destination = getDestination(destinations, point.destination);
-  const { offers: typedOffers } = getTypedOffers(offers, type);
-  const tripOffers = typedOffers.map((offer) => ({
+  const { offers: pointOffers } = getPointOffers(offers, type);
+  const tripOffers = pointOffers.map((offer) => ({
     ...offer,
     type: type,
     isSelected: point.offers.includes(offer.id)
@@ -160,9 +160,9 @@ const getEditTemplate = (point, offers, destinations) => {
 export default class EditView extends AbstractStatefulView {
   #offers = null;
   #destinations = null;
-  #submitHandler = null;
-  #deleteHandler = null;
-  #cancelHandler = null;
+  #submitButtonHandler = null;
+  #deleteButtonHandler = null;
+  #cancelButtonHandler = null;
   #dateFromPicker = null;
   #dateToPicker = null;
 
@@ -171,9 +171,9 @@ export default class EditView extends AbstractStatefulView {
     this._setState(EditView.parsePointToState(tripEvent));
     this.#offers = offers;
     this.#destinations = destinations;
-    this.#submitHandler = onFormSubmit;
-    this.#deleteHandler = onFormDelete;
-    this.#cancelHandler = onFormCancel;
+    this.#submitButtonHandler = onFormSubmit;
+    this.#deleteButtonHandler = onFormDelete;
+    this.#cancelButtonHandler = onFormCancel;
 
     this._restoreHandlers();
   }
@@ -205,22 +205,14 @@ export default class EditView extends AbstractStatefulView {
     });
   }
 
-  reset(point) {
-    this.updateElement(point);
-  }
+  reset = (point) => this.updateElement(point);
+  destroy = () => remove(this);
 
-  destroy() {
-    remove(this);
-  }
-
-  removeElement() {
-    this.#dateFromPicker.destroy();
-    this.#dateFromPicker = null;
-    this.#dateToPicker.destroy();
-    this.#dateToPicker = null;
-
+  removeElement = () => {
     super.removeElement();
-  }
+    this.#dateFromPicker.destroy();
+    this.#dateToPicker.destroy();
+  };
 
   #getResetHandler = () => this._state.isAdding ? this.#onCancelForm : this.#onDeleteForm;
 
@@ -231,7 +223,7 @@ export default class EditView extends AbstractStatefulView {
         ...DefaultFlatpickrConfig,
         defaultDate: this._state.dateFrom,
         maxDate: this._state.dateTo,
-        onChange: this.#onDateFromChange,
+        onClose: this.#onDateFromChange,
       },
     );
 
@@ -241,24 +233,24 @@ export default class EditView extends AbstractStatefulView {
         ...DefaultFlatpickrConfig,
         defaultDate: this._state.dateTo,
         minDate: this._state.dateFrom,
-        onChange: this.#onDateToChange,
+        onClose: this.#onDateToChange,
       },
     );
   }
 
   #onFormSubmit = (evt) => {
     evt.preventDefault();
-    this.#submitHandler(EditView.parseStateToPoint(this._state));
+    this.#submitButtonHandler(EditView.parseStateToPoint(this._state));
   };
 
   #onDeleteForm = (evt) => {
     evt.preventDefault();
-    this.#deleteHandler(EditView.parseStateToPoint(this._state));
+    this.#deleteButtonHandler(EditView.parseStateToPoint(this._state));
   };
 
   #onCancelForm = (evt) => {
     evt.preventDefault();
-    this.#cancelHandler();
+    this.#cancelButtonHandler();
   };
 
   #onTypeChange = (evt) => {
@@ -281,18 +273,10 @@ export default class EditView extends AbstractStatefulView {
     evt.target.value = getInteger(evt.target.value);
   };
 
-  #onPriceChange = (evt) => {
-    const price = getInteger(evt.target.value);
-    this.updateElement({ basePrice: price });
-  };
+  #onPriceChange = (evt) => this._setState({ basePrice: getInteger(evt.target.value) });
+  #onDateFromChange = ([date]) => this.updateElement({ dateFrom: date });
+  #onDateToChange = ([date]) => this.updateElement({ dateTo: date });
 
-  #onDateFromChange = ([date]) => {
-    this.updateElement({ dateFrom: date });
-  };
-
-  #onDateToChange = ([date]) => {
-    this.updateElement({ dateTo: date });
-  };
 
   #onOfferClick = (evt) => {
     const { dataset: { offerId }, checked } = evt.target;
@@ -300,7 +284,7 @@ export default class EditView extends AbstractStatefulView {
       ? addItem(this._state.offers, offerId)
       : removeItem(this._state.offers, offerId);
 
-    this.updateElement({ offers });
+    this._setState({ offers });
   };
 
   static parsePointToState = (point) => ({

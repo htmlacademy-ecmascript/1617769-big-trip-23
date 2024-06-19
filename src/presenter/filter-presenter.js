@@ -41,9 +41,6 @@ export default class FilterPresenter {
     prevFilterView.destroy();
   };
 
-  #onFilterChange = (filterType) => {
-    this.#model.setCurrentFilter(UpdateType.MAJOR, filterType);
-  };
-
+  #onFilterChange = (filterType) => this.#model.setCurrentFilter(UpdateType.MAJOR, filterType);
   #onModelChange = () => this.#renderFilters(this.#model);
 }

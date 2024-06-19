@@ -52,15 +52,14 @@ export default class PointModel extends Observable {
       this.#destinations = await this.#tripApiService.getDestinations();
       this.#offers = await this.#tripApiService.getOffers();
       this.#trip = (await this.#tripApiService.getPoints()).map(TripApiService.adaptToClient);
+      this.#filters = Object.values(Filters);
+      this._notify(UpdateType.INIT);
     } catch(error) {
       this.#destinations = [];
       this.#offers = [];
       this.#trip = [];
       this._notify(UpdateType.ERROR);
     }
-
-    this.#filters = Object.values(Filters);
-    this._notify(UpdateType.INIT);
   };
 
   setCurrentFilter = (updateType, filterType) => {
