@@ -29,6 +29,7 @@ export default class TripPresenter {
     this.#model.addObserver(this.#onModelChange);
     this.#addButton = addButton;
     this.#addButton.addEventListener('click', this.#onAddButtonClick);
+    this.#setAddButtonDisabled(true);
 
     this.#tripView = new TripView({ container: this.#container });
     this.#newPointPresenter = new NewPointPresenter({
@@ -45,16 +46,6 @@ export default class TripPresenter {
     const filteredTrip = getFiltered(this.#model.trip, this.#model.currentFilter);
     return getSorted(filteredTrip, this.#model.currentSort);
   }
-
-  #renderLoadingView = (message) => {
-    this.#loadingView = new LoadingView ({ message, container: this.#container });
-  };
-
-  #clearLoadingView = () => {
-    if (this.#loadingView) {
-      this.#loadingView.destroy();
-    }
-  };
 
   #renderSortView = () => {
     this.#sortView = new SortView({
@@ -77,26 +68,36 @@ export default class TripPresenter {
     });
   };
 
-  #getLoading = () => {
-    if (this.#isLoading) {
-      return Messages.LOADING;
-    }
+  #renderLoadingView = () => {
+    const getMessage = () => {
+      switch (true) {
+        case this.#isLoading:
+          return Messages.LOADING;
+        case this.#isError:
+          return Messages.ERROR;
+        case isEmpty(this.trip):
+          return TripEmptyMessages[this.#model.currentFilter];
+        default:
+          return '';
+      }
+    };
 
-    if (this.#isError) {
-      return Messages.ERROR;
+    const message = getMessage();
+    if (message) {
+      this.#loadingView = new LoadingView({ message, container: this.#container });
     }
+    return Boolean(message);
+  };
 
-    if (isEmpty(this.trip)) {
-      return TripEmptyMessages[this.#model.currentFilter];
+
+  #clearLoadingView = () => {
+    if (this.#loadingView) {
+      this.#loadingView.destroy();
     }
-    return '';
   };
 
   #renderTrip = () => {
-    const message = this.#getLoading();
-    if (message) {
-      this.#setAddButtonDisabled(this.#isLoading);
-      this.#renderLoadingView(message);
+    if (this.#renderLoadingView()) {
       return;
     }
 
@@ -111,7 +112,6 @@ export default class TripPresenter {
     if (this.#sortView) {
       this.#sortView.destroy();
     }
-    this.#clearLoadingView();
     if (resetSortType) {
       this.#model.currentSort = DEFAULT_SORT_TYPE;
     }
@@ -131,14 +131,17 @@ export default class TripPresenter {
 
   #onAddButtonClick = () => {
     this.#onPointModeChange();
-    this.#clearTrip();
     this.#model.currentSort = DEFAULT_SORT_TYPE;
     this.#model.setCurrentFilter(UpdateType.MAJOR, DEFAULT_FILTER);
     this.#newPointPresenter.init(this.#model);
+    this.#clearLoadingView();
     this.#setAddButtonDisabled(true);
   };
 
-  #onNewPointClose = () => this.#setAddButtonDisabled(false);
+  #onNewPointClose = () => {
+    this.#setAddButtonDisabled(false);
+    this.#renderLoadingView();
+  };
 
   #onPointChange = async (actionType, updateType, data) => {
     this.#uiBlocker.block();
@@ -172,6 +175,7 @@ export default class TripPresenter {
   };
 
   #onModelChange = (updateType, data) => {
+    this.#clearLoadingView();
     switch (updateType) {
       case UpdateType.PATCH:
         this.#pointPresenters.get(data.id).init(data);
@@ -193,6 +197,7 @@ export default class TripPresenter {
         break;
       case UpdateType.ERROR:
         this.#isError = true;
+        this.#isLoading = false;
         this.#renderTrip();
         break;
     }
