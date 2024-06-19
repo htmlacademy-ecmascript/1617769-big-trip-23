@@ -11,9 +11,9 @@ const getIsDisabledAttr = (isDisabled) => isDisabled ? 'disabled' : '';
 const addItem = (items, itemToAdd) => Array.from(new Set([...items, itemToAdd]));
 const removeItem = (items, itemToRemove) => items.filter((item) => item !== itemToRemove);
 
-const getInteger = (str) => {
-  const num = parseInt(str.replace(/\D/g, ''), 10);
-  return isNaN(num) ? 0 : num;
+const getInteger = (input) => {
+  const parsedNumber = parseInt(input.replace(/\D/g, ''), 10);
+  return isNaN(parsedNumber) ? 0 : parsedNumber;
 };
 
 export {
