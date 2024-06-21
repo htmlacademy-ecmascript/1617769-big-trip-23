@@ -1,6 +1,6 @@
 import { isEmpty } from '../utils/common';
 import SortView from '../view/sort-view';
-import TripView from '../view/trip-view';
+import PointsView from '../view/points-view';
 import LoadingView from '../view/loading-view';
 import PointPresenter from './point-presenter';
 import NewPointPresenter from './new-point-presenter';
@@ -13,7 +13,7 @@ import { getSorted } from '../utils/sort';
 export default class TripPresenter {
   #model = null;
   #container = null;
-  #tripView = null;
+  #pointsView = null;
   #sortView = null;
   #loadingView = null;
   #isLoading = true;
@@ -31,10 +31,10 @@ export default class TripPresenter {
     this.#addButton.addEventListener('click', this.#onAddButtonClick);
     this.#setAddButtonDisabled(true);
 
-    this.#tripView = new TripView({ container: this.#container });
+    this.#pointsView = new PointsView({ container: this.#container });
     this.#newPointPresenter = new NewPointPresenter({
       model,
-      container: this.#tripView.element,
+      container: this.#pointsView.element,
       onDataChange: this.#onPointChange,
       onDestroy: this.#onNewPointClose
     });
@@ -55,11 +55,11 @@ export default class TripPresenter {
     });
   };
 
-  #renderTripView = (points) => {
+  #renderPointsView = (points) => {
     points.forEach((point) => {
       const pointPresenter = new PointPresenter({
         model: this.#model,
-        container: this.#tripView.element,
+        container: this.#pointsView.element,
         onPointChange: this.#onPointChange,
         onModeChange: this.#onPointModeChange,
       });
@@ -102,7 +102,7 @@ export default class TripPresenter {
     }
 
     this.#renderSortView();
-    this.#renderTripView(this.points);
+    this.#renderPointsView(this.points);
   };
 
   #clearPoints = (resetSortType = false) => {
