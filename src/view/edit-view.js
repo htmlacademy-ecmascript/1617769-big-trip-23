@@ -1,4 +1,4 @@
-import { BLANK_POINT, POINT_TYPES, DateFormats, ButtonTypes, DefaultFlatpickrConfig } from '../const/common';
+import { BLANK_POINT, POINT_TYPES, DateFormat, ButtonType, DefaultFlatpickrConfig } from '../const/common';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { displayDateTime } from '../utils/date';
 import { remove } from '../framework/render';
@@ -54,10 +54,10 @@ const getPointDestination = (type, { name: destinationName = '' } = {}, destinat
 const getTimePeriodTemplate = (dateFrom, dateTo) => `
   <div class="event__field-group  event__field-group--time">
     <label class="visually-hidden" for="event-start-time-1">From</label>
-    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${displayDateTime(dateFrom, DateFormats.DATE_TIME)}">
+    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${displayDateTime(dateFrom, DateFormat.DATE_TIME)}">
     &mdash;
     <label class="visually-hidden" for="event-end-time-1">From</label>
-    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${displayDateTime(dateTo, DateFormats.DATE_TIME)}">
+    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${displayDateTime(dateTo, DateFormat.DATE_TIME)}">
   </div>
 `;
 
@@ -78,9 +78,9 @@ const getRollupButtonTemplate = (isAdding) => !isAdding
   : '';
 
 const getButtonsTemplate = (isAdding, isSaving, isDeleting) => {
-  const saveCaption = isSaving ? ButtonTypes.SAVING : ButtonTypes.SAVE;
-  const deleteCaption = isDeleting ? ButtonTypes.DELETING : ButtonTypes.DELETE;
-  const resetCaption = isAdding ? ButtonTypes.CANCEL : deleteCaption;
+  const saveCaption = isSaving ? ButtonType.SAVING : ButtonType.SAVE;
+  const deleteCaption = isDeleting ? ButtonType.DELETING : ButtonType.DELETE;
+  const resetCaption = isAdding ? ButtonType.CANCEL : deleteCaption;
 
   return `
     <button class="event__save-btn  btn  btn--blue" type="submit" ${getIsDisabledAttr(isSaving)}>${saveCaption}</button>
