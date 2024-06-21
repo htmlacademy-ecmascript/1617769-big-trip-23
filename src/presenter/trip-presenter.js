@@ -4,8 +4,8 @@ import TripView from '../view/trip-view';
 import LoadingView from '../view/loading-view';
 import PointPresenter from './point-presenter';
 import NewPointPresenter from './new-point-presenter';
-import { UserAction, UpdateType, Messages, DEFAULT_SORT_TYPE, DEFAULT_FILTER,
-  TripEmptyMessages, UiBlockerConfig } from '../const/common';
+import { UserAction, UpdateType, Message, DEFAULT_SORT_TYPE, DEFAULT_FILTER,
+  TripEmptyMessage, UiBlockerConfig } from '../const/common';
 import UiBlocker from '../framework/ui-blocker/ui-blocker';
 import { getFiltered } from '../utils/filter';
 import { getSorted } from '../utils/sort';
@@ -79,15 +79,15 @@ export default class TripPresenter {
 
   #getLoading = () => {
     if (this.#isLoading) {
-      return Messages.LOADING;
+      return Message.LOADING;
     }
 
     if (this.#isError) {
-      return Messages.ERROR;
+      return Message.ERROR;
     }
 
     if (isEmpty(this.trip)) {
-      return TripEmptyMessages[this.#model.currentFilter];
+      return TripEmptyMessage[this.#model.currentFilter];
     }
     return '';
   };

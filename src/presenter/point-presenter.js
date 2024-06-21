@@ -85,7 +85,7 @@ export default class PointPresenter {
   };
 
 
-  #renderPoint = (tripEvent) => { //?
+  #renderPoint = (tripEvent) => {
     const offers = this.#model.offers;
     const destinations = this.#model.destinations;
 
@@ -101,7 +101,7 @@ export default class PointPresenter {
       onFavoriteClick: this.#onFavoriteClick,
     });
 
-    this.#editView = new EditView({ //?
+    this.#editView = new EditView({
       tripEvent,
       offers,
       destinations,
