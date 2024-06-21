@@ -39,12 +39,12 @@ export default class TripPresenter {
       onDestroy: this.#onNewPointClose
     });
 
-    this.#renderTrip();
+    this.#renderPoints();
   }
 
-  get trip() {
-    const filteredTrip = getFiltered(this.#model.trip, this.#model.currentFilter);
-    return getSorted(filteredTrip, this.#model.currentSort);
+  get points() {
+    const filteredPoints = getFiltered(this.#model.points, this.#model.currentFilter);
+    return getSorted(filteredPoints, this.#model.currentSort);
   }
 
   #renderSortView = () => {
@@ -55,8 +55,8 @@ export default class TripPresenter {
     });
   };
 
-  #renderTripView = (trip) => {
-    trip.forEach((point) => {
+  #renderTripView = (points) => {
+    points.forEach((point) => {
       const pointPresenter = new PointPresenter({
         model: this.#model,
         container: this.#tripView.element,
@@ -75,7 +75,7 @@ export default class TripPresenter {
           return Message.LOADING;
         case this.#isError:
           return Message.ERROR;
-        case isEmpty(this.trip):
+        case isEmpty(this.points):
           return TripEmptyMessage[this.#model.currentFilter];
         default:
           return '';
@@ -96,16 +96,16 @@ export default class TripPresenter {
     }
   };
 
-  #renderTrip = () => {
+  #renderPoints = () => {
     if (this.#renderLoadingView()) {
       return;
     }
 
     this.#renderSortView();
-    this.#renderTripView(this.trip);
+    this.#renderTripView(this.points);
   };
 
-  #clearTrip = (resetSortType = false) => {
+  #clearPoints = (resetSortType = false) => {
     this.#newPointPresenter.destroy();
     this.#pointPresenters.forEach((pointPresenter) => pointPresenter.destroy());
     this.#pointPresenters.clear();
@@ -182,23 +182,23 @@ export default class TripPresenter {
         this.#onPointModeChange();
         break;
       case UpdateType.MINOR:
-        this.#clearTrip();
-        this.#renderTrip();
+        this.#clearPoints();
+        this.#renderPoints();
         break;
       case UpdateType.MAJOR:
-        this.#clearTrip(true);
-        this.#renderTrip();
+        this.#clearPoints(true);
+        this.#renderPoints();
         break;
       case UpdateType.INIT:
         this.#isLoading = false;
         this.#setAddButtonDisabled(this.#isLoading);
         this.#loadingView.destroy();
-        this.#renderTrip();
+        this.#renderPoints();
         break;
       case UpdateType.ERROR:
         this.#isError = true;
         this.#isLoading = false;
-        this.#renderTrip();
+        this.#renderPoints();
         break;
     }
   };

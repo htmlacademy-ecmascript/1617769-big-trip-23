@@ -5,6 +5,7 @@ import Observable from '../framework/observable';
 import { removeItem } from '../utils/common';
 import { getInfo } from './utils/info';
 import { getSorted } from '../utils/sort';
+
 export default class PointModel extends Observable {
   #destinations = [];
   #offers = [];
@@ -14,7 +15,7 @@ export default class PointModel extends Observable {
   #currentSort = DEFAULT_SORT_TYPE;
   #tripApiService = new TripApiService(BASE_URL, AUTHORIZATION);
 
-  get trip() {
+  get points() {
     return this.#points;
   }
 
@@ -43,8 +44,8 @@ export default class PointModel extends Observable {
   }
 
   get info() {
-    const sortedTrip = getSorted(this.#points, DEFAULT_SORT_TYPE);
-    return getInfo(sortedTrip, this.#destinations, this.#offers);
+    const sortedPoints = getSorted(this.#points, DEFAULT_SORT_TYPE);
+    return getInfo(sortedPoints, this.#destinations, this.#offers);
   }
 
   init = async () => {
