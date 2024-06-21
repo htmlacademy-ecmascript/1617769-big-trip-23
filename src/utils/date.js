@@ -7,23 +7,21 @@ dayjs.extend(duration);
 const getDateDiff = ({ dateFrom, dateTo }) => dayjs(dateTo).diff(dateFrom);
 
 const displayDuration = (dateFrom, dateTo) => {
-  const dateDelta = dayjs.duration(getDateDiff({ dateFrom, dateTo }));
-  if (dateDelta.days()) {
-    return dateDelta.format(DateFormat.DAY);
-  }
+  const dateDiff = dayjs.duration(getDateDiff({ dateFrom, dateTo }));
 
-  if (dateDelta.hours()) {
-    return dateDelta.format(DateFormat.HOUR);
+  if (dateDiff.days()) {
+    const diffInDays = dayjs(dateTo).diff(dateFrom, 'day').toString().padStart(2, '0');
+    return `${diffInDays}D ${dateDiff.format(DateFormat.HOUR)}`;
   }
-
-  return dateDelta.format(DateFormat.MINUTE);
+  if (dateDiff.hours()) {
+    return dateDiff.format(DateFormat.HOUR);
+  }
+  return dateDiff.format(DateFormat.MINUTE);
 };
-
-const isDatesEqual = (dateA, dateB) => ((dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D'));
 
 const displayDateMonth = (date) => date ? dayjs(date).format(DateFormat.MONTH_DAY) : '';
 const displayDate = (date) => date ? dayjs(date).format(DateFormat.DATE) : '';
 const displayTime = (time) => time ? dayjs(time).format(DateFormat.TIME) : '';
 const displayDateTime = (date, dateFormat = DateFormat.DATE_TIME_SYSTEM) => date ? dayjs(date).format(dateFormat) : '';
 
-export { getDateDiff, isDatesEqual, displayDuration, displayDate, displayDateMonth, displayTime, displayDateTime };
+export { getDateDiff, displayDuration, displayDate, displayDateMonth, displayTime, displayDateTime };

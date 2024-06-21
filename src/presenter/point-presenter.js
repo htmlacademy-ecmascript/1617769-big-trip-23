@@ -2,7 +2,8 @@ import EditView from '../view/edit-view';
 import PointView from '../view/point-view';
 import { replace } from '../framework/render';
 import { UserAction, UpdateType, FormMode } from '../const/common';
-import { isDatesEqual } from '../utils/date';
+import { isEscKeydown } from '../utils/common';
+
 
 export default class PointPresenter {
   #point = null;
@@ -58,13 +59,13 @@ export default class PointPresenter {
 
   setSaving = () => {
     if (this.#mode === FormMode.EDIT) {
-      this.#editView.updateElement({ isSaving: true });
+      this.#editView.updateElement({ isSaving: true, isDeleting: false });
     }
   };
 
   setDeleting = () => {
     if (this.#mode === FormMode.EDIT) {
-      this.#editView.updateElement({ isDeleting: true });
+      this.#editView.updateElement({ isDeleting: true, isSaving: false });
     }
   };
 
@@ -74,13 +75,7 @@ export default class PointPresenter {
       return;
     }
 
-    const resetFormState = () => {
-      this.#editView.updateElement({
-        isSaving: false,
-        isDeleting: false,
-      });
-    };
-
+    const resetFormState = () => this.#editView.updateElement({ isSaving: false, isDeleting: false });
     this.#editView.shake(resetFormState);
   };
 
@@ -139,6 +134,9 @@ export default class PointPresenter {
     this.#removeListeners();
   };
 
+  #addListeners = () => document.addEventListener('keydown', this.#onEscKeydown);
+  #removeListeners = () => document.removeEventListener('keydown', this.#onEscKeydown);
+
   #onEditClick = () => {
     this.mode = FormMode.EDIT;
   };
@@ -147,25 +145,15 @@ export default class PointPresenter {
     this.mode = FormMode.VIEW;
   };
 
-  #addListeners = () => document.addEventListener('keydown', this.#onEscKeydown);
-  #removeListeners = () => document.removeEventListener('keydown', this.#onEscKeydown);
-
-  #onFormDelete = (point) => {
-    this.#pointChangeHandler(UserAction.DELETE, UpdateType.MINOR, point);
-  };
-
-  #onFormSubmit = (point) => {
-    const isMinorUpdate = !isDatesEqual(this.#point.dateFrom, point.dateFrom) ||
-      !isDatesEqual(this.#point.dateTo, point.dateTo) ;
-    this.#pointChangeHandler(UserAction.UPDATE, isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH, point);
-  };
+  #onFormDelete = (point) => this.#pointChangeHandler(UserAction.DELETE, UpdateType.MINOR, point);
+  #onFormSubmit = (point) => this.#pointChangeHandler(UserAction.UPDATE, UpdateType.MINOR, point);
 
   #onFavoriteClick = () => this.#pointChangeHandler(UserAction.UPDATE, UpdateType.PATCH,
     { ...this.#point, isFavorite: !this.#point.isFavorite }
   );
 
   #onEscKeydown = (evt) => {
-    if (evt.key === 'Escape') {
+    if (isEscKeydown(evt)) {
       evt.stopPropagation();
       this.mode = FormMode.VIEW;
     }
