@@ -16,10 +16,10 @@ export default class FilterPresenter {
   }
 
   get filters() {
-    const { filters, trip } = this.#model;
+    const { filters, points } = this.#model;
     return filters.map((type) => ({
       type,
-      disabled: isEmpty(getFiltered(trip, type))
+      disabled: isEmpty(getFiltered(points, type))
     }));
   }
 

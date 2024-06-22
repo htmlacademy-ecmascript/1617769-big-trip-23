@@ -9,4 +9,5 @@ const SortFunction = {
 
 const getSorted = (items, sortType) => items.sort(SortFunction[sortType]);
 
+
 export { getSorted };

@@ -1,6 +1,6 @@
 import { isEmpty } from '../utils/common';
 import SortView from '../view/sort-view';
-import TripView from '../view/trip-view';
+import PointsView from '../view/points-view';
 import LoadingView from '../view/loading-view';
 import PointPresenter from './point-presenter';
 import NewPointPresenter from './new-point-presenter';
@@ -10,10 +10,10 @@ import UiBlocker from '../framework/ui-blocker/ui-blocker';
 import { getFiltered } from '../utils/filter';
 import { getSorted } from '../utils/sort';
 
-export default class TripPresenter {
+export default class PointsPresenter {
   #model = null;
   #container = null;
-  #tripView = null;
+  #pointsView = null;
   #sortView = null;
   #loadingView = null;
   #isLoading = true;
@@ -31,20 +31,20 @@ export default class TripPresenter {
     this.#addButton.addEventListener('click', this.#onAddButtonClick);
     this.#setAddButtonDisabled(true);
 
-    this.#tripView = new TripView({ container: this.#container });
+    this.#pointsView = new PointsView({ container: this.#container });
     this.#newPointPresenter = new NewPointPresenter({
       model,
-      container: this.#tripView.element,
+      container: this.#pointsView.element,
       onDataChange: this.#onPointChange,
       onDestroy: this.#onNewPointClose
     });
 
-    this.#renderTrip();
+    this.#renderPoints();
   }
 
-  get trip() {
-    const filteredTrip = getFiltered(this.#model.trip, this.#model.currentFilter);
-    return getSorted(filteredTrip, this.#model.currentSort);
+  get points() {
+    const filteredPoints = getFiltered(this.#model.points, this.#model.currentFilter);
+    return getSorted(filteredPoints, this.#model.currentSort);
   }
 
   #renderSortView = () => {
@@ -55,11 +55,11 @@ export default class TripPresenter {
     });
   };
 
-  #renderTripView = (trip) => {
-    trip.forEach((point) => {
+  #renderPointsView = (points) => {
+    points.forEach((point) => {
       const pointPresenter = new PointPresenter({
         model: this.#model,
-        container: this.#tripView.element,
+        container: this.#pointsView.element,
         onPointChange: this.#onPointChange,
         onModeChange: this.#onPointModeChange,
       });
@@ -75,7 +75,7 @@ export default class TripPresenter {
           return Message.LOADING;
         case this.#isError:
           return Message.ERROR;
-        case isEmpty(this.trip):
+        case isEmpty(this.points):
           return TripEmptyMessage[this.#model.currentFilter];
         default:
           return '';
@@ -96,16 +96,16 @@ export default class TripPresenter {
     }
   };
 
-  #renderTrip = () => {
+  #renderPoints = () => {
     if (this.#renderLoadingView()) {
       return;
     }
 
     this.#renderSortView();
-    this.#renderTripView(this.trip);
+    this.#renderPointsView(this.points);
   };
 
-  #clearTrip = (resetSortType = false) => {
+  #clearPoints = (resetSortType = false) => {
     this.#newPointPresenter.destroy();
     this.#pointPresenters.forEach((pointPresenter) => pointPresenter.destroy());
     this.#pointPresenters.clear();
@@ -182,23 +182,23 @@ export default class TripPresenter {
         this.#onPointModeChange();
         break;
       case UpdateType.MINOR:
-        this.#clearTrip();
-        this.#renderTrip();
+        this.#clearPoints();
+        this.#renderPoints();
         break;
       case UpdateType.MAJOR:
-        this.#clearTrip(true);
-        this.#renderTrip();
+        this.#clearPoints(true);
+        this.#renderPoints();
         break;
       case UpdateType.INIT:
         this.#isLoading = false;
         this.#setAddButtonDisabled(this.#isLoading);
         this.#loadingView.destroy();
-        this.#renderTrip();
+        this.#renderPoints();
         break;
       case UpdateType.ERROR:
         this.#isError = true;
         this.#isLoading = false;
-        this.#renderTrip();
+        this.#renderPoints();
         break;
     }
   };
