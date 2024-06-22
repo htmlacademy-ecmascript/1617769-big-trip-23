@@ -10,7 +10,7 @@ import UiBlocker from '../framework/ui-blocker/ui-blocker';
 import { getFiltered } from '../utils/filter';
 import { getSorted } from '../utils/sort';
 
-export default class TripPresenter {
+export default class PointsPresenter {
   #model = null;
   #container = null;
   #pointsView = null;
