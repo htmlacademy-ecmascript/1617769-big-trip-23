@@ -11,14 +11,14 @@ const getOffersCost = (point, offers) => {
   return point.offers.reduce((price, offerId) => price + getOffer(pointOffers, offerId).price , 0);
 };
 
-const getInfo = (trip, destinations, offers) => {
-  if (isEmpty(trip)) {
+const getInfo = (points, destinations, offers) => {
+  if (isEmpty(points)) {
     return {};
   }
 
-  const first = trip[0];
-  const last = trip[trip.length - 1];
-  const middle = trip.slice(1, -1);
+  const first = points[0];
+  const last = points[points.length - 1];
+  const middle = points.slice(1, -1);
   const middleDestination = middle.length === 1 ? getDestinationName(destinations, middle[0].destination) : '...';
   return {
     start: getDestinationName(destinations, first.destination),
@@ -26,7 +26,7 @@ const getInfo = (trip, destinations, offers) => {
     end: getDestinationName(destinations, last.destination),
     dateFrom: first.dateFrom,
     dateTo: last.dateTo,
-    cost: trip.reduce(
+    cost: points.reduce(
       (price, point) => price + point.basePrice + getOffersCost(point, offers), 0),
   };
 };

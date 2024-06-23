@@ -2,14 +2,8 @@ import { BLANK_POINT, POINT_TYPES, DateFormat, ButtonType, DefaultFlatpickrConfi
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { displayDateTime } from '../utils/date';
 import { remove } from '../framework/render';
-import {
-  firstLetterUpperCase,
-  getIsCheckedAttr,
-  getIsDisabledAttr,
-  getInteger,
-  addItem,
-  removeItem,
-  isEmpty } from '../utils/common';
+import { firstLetterUpperCase, getIsCheckedAttr, getIsDisabledAttr, getInteger,
+  addItem, removeItem, isEmpty } from '../utils/common';
 import { getDestination, getPointOffers } from '../model/utils/common';
 import he from 'he';
 import flatpickr from 'flatpickr';
