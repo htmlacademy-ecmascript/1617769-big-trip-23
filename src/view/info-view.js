@@ -3,7 +3,7 @@ import { render, remove, RenderPosition } from '../framework/render';
 import { displayDateTime } from '../utils/date';
 import { DateFormat } from '../const/common';
 
-const getTripInfoTemplate = ({ start, middle, end, dateFrom, dateTo, cost }) => {
+const getInfoTemplate = ({ start, middle, end, dateFrom, dateTo, cost }) => {
   if (!start) {
     return '<section class="trip-main__trip-info  trip-info"></section>';
   }
@@ -33,7 +33,7 @@ export default class InfoView extends AbstractView {
   }
 
   get template() {
-    return getTripInfoTemplate(this.#info);
+    return getInfoTemplate(this.#info);
   }
 
   destroy = () => remove(this);

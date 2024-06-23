@@ -80,7 +80,7 @@ export default class PointPresenter {
   };
 
 
-  #renderPoint = (tripEvent) => {
+  #renderPoint = (point) => {
     const offers = this.#model.offers;
     const destinations = this.#model.destinations;
 
@@ -88,7 +88,7 @@ export default class PointPresenter {
     const prevEditView = this.#editView;
 
     this.#pointView = new PointView({
-      tripEvent,
+      tripEvent : point,
       offers,
       destinations,
       container: this.#container,
@@ -97,7 +97,7 @@ export default class PointPresenter {
     });
 
     this.#editView = new EditView({
-      tripEvent,
+      tripEvent: point,
       offers,
       destinations,
       onFormSubmit: this.#onFormSubmit,
@@ -114,7 +114,7 @@ export default class PointPresenter {
     }
 
     if (this.mode === FormMode.VIEW) {
-      this.#editView.reset(tripEvent);
+      this.#editView.reset(point);
       replace(this.#pointView, prevPointView);
     }
 
